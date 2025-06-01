@@ -1,0 +1,23 @@
+{
+    "name": "neillolochavezcutipa/php-blog",
+    "autoload": {
+        "psr-4": {
+            "Neillolochavezcutipa\\PhpBlog\\": "src/",
+            "MVC\\": ".",
+            "controller\\": "controllers/",
+            "model\\": "models/"
+        }
+    },
+    "authors": [
+        {
+            "name": "NeilChavez",
+            "email": "lolochavez22@icloud.com"
+        }
+    ],
+    "require-dev": {
+        "symfony/var-dumper": "^7.2"
+    },
+    "require": {
+        "intervention/image": "^3.11"
+    }
+}
