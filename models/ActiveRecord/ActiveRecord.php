@@ -68,11 +68,11 @@ class ActiveRecord
     $this->updated_at = $now;
     $keyAndValues = $this->getKeysAndValues();
     $columnsAndValues = [];
-    foreach($keyAndValues as $key => $value){
+    foreach ($keyAndValues as $key => $value) {
       $columnsAndValues[] = "$key = '$value'";
     };
     $query = "UPDATE " . static::$table . " SET ";
-    $query .= implode(", ",$columnsAndValues);
+    $query .= implode(", ", $columnsAndValues);
     $query .= " WHERE " . static::$table . ".id = '" . $this->sanitizeValue($id) . "' LIMIT 1;";
     $res = self::$db->query($query);
     if (!$res) {
@@ -95,11 +95,29 @@ class ActiveRecord
   function save(): ActiveRecord|bool
   {
     if (!$this->id) {
-     return $this->create();
+      return $this->create();
     } else {
       return $this->update($this->id);
     }
   }
+
+  static function findBy($args = []): ActiveRecord|bool
+  {
+    $key = $args[0];
+    $value = $args[1];
+    $query = "SELECT * FROM " . static::$table . " WHERE " . static::$table . "." . $key . " = '" . self::$db->real_escape_string($value) . "';";
+    $res = self::$db->query($query);
+    if (!$res) {
+      throw new ErrorException("Query not successf0ull");
+    }
+    $res = $res->fetch_assoc();
+    if (!$res) {
+      return false;
+    }
+    $entity = self::createObject($res);
+    return $entity;
+  }
+
   function sincronize($args = [])
   {
     foreach ($args as $key => $value) {
