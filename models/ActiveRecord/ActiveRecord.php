@@ -103,9 +103,12 @@ class ActiveRecord
 
   static function findBy($args = []): ActiveRecord|bool
   {
-    $key = $args[0];
-    $value = $args[1];
-    $query = "SELECT * FROM " . static::$table . " WHERE " . static::$table . "." . $key . " = '" . self::$db->real_escape_string($value) . "';";
+    $criteria = "";
+    foreach ($args as $key => $value) {
+      $value = self::sanitizeValue($value);
+      $criteria .= "$key = " . "'$value'";
+    }
+    $query = "SELECT * FROM " . static::$table . " WHERE " . static::$table . "." . $criteria . ";";
     $res = self::$db->query($query);
     if (!$res) {
       throw new ErrorException("Query not successf0ull");
@@ -155,6 +158,9 @@ class ActiveRecord
 
   static function sanitizeValue($value)
   {
+    if($value === null){
+      return null;
+    }
     return self::$db->real_escape_string($value);
   }
 }
