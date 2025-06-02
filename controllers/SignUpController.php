@@ -2,6 +2,7 @@
 
 namespace controller;
 
+use Exception;
 use model\User;
 use MVC\Router;
 
@@ -16,12 +17,12 @@ class SignUpController
       $user = new User($_POST);
       $errors = $user->validate();
       //check if the user already exists
-      $emailAlreadyExists = User::findBy(["email", $user->email]);
+      $emailAlreadyExists = User::findBy(["email" => $user->email]);
       if ($emailAlreadyExists) {
         $errors[] = "Email already exists.";
       }
       //check if the usersname is already used
-      $usernameAlreadyUsed = User::findBy(["username", $user->username]);
+      $usernameAlreadyUsed = User::findBy(["username" => $user->username]);
       if ($usernameAlreadyUsed) {
         $errors[] = "Username already exists.";
       }
@@ -47,6 +48,16 @@ class SignUpController
   
   static function activateUser(Router $router)
   {
+    $token = $_GET["token"];
+    /**
+     * @var User $user 
+     */
+    $user = User::findBy(["token" => $token]);
+    if(!$user){
+      throw new Exception("Token not valid");
+    }
+    $user->token = null;
+    $user->save();
     $router->render("/activate-user");
   }
 }
