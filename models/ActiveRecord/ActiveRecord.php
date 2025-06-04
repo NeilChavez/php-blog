@@ -106,9 +106,13 @@ class ActiveRecord
     $criteria = "";
     foreach ($args as $key => $value) {
       $value = self::sanitizeValue($value);
-      $criteria .= "$key = " . "'$value'";
+      $criteria .= static::$table . "." . $key . " = " . "'$value'";
+      //add AND between more criterias
+      if (next($args)) {
+        $criteria .= " AND ";
+      }
     }
-    $query = "SELECT * FROM " . static::$table . " WHERE " . static::$table . "." . $criteria . ";";
+    $query = "SELECT * FROM " . static::$table . " WHERE " . $criteria . ";";
     $res = self::$db->query($query);
     if (!$res) {
       throw new ErrorException("Query not successf0ull");
@@ -158,7 +162,7 @@ class ActiveRecord
 
   static function sanitizeValue($value)
   {
-    if($value === null){
+    if ($value === null) {
       return null;
     }
     return self::$db->real_escape_string($value);
