@@ -24,4 +24,8 @@ class PageController
   {
     $router->render("/about-us");
   }
+  static function dashboard(Router $router)
+  {
+    $router->render("/dashboard");
+  }
 }
