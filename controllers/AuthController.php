@@ -11,19 +11,22 @@ class AuthController
   {
     $errors = [];
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
-      $user = new User($_POST); 
-      if(!$user->email ||  !$user->password){
+      $user = new User($_POST);
+      if (!$user->email ||  !$user->password) {
         $errors[] = "fields are not completed";
       }
       if (empty($errors)) {
+        $passwordEntered = $user->password;
         /**
          * @var User|bool $user
          */
-        $user = User::findBy(["email" => $user->email, "password" => $user->password]);
-        if ($user) {
+        $user = User::findBy(["email" => $user->email]);
+        $passMatches = password_verify($passwordEntered, $user->password);
+        if ($user && $passMatches) {
           session_start();
           $_SESSION["user"] = $user->username;
           $_SESSION["email"] = $user->email;
+          $_SESSION["role"] = $user->role;
           header("Location: /dashboard?username=$user->username");
         } else {
           $errors[] = "Your credential are not correct.";

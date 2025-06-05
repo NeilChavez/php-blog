@@ -55,6 +55,7 @@ class User extends ActiveRecord
   
   function createUser()
   {
+    $this->password = password_hash($this->password, PASSWORD_DEFAULT);
     $res = $this->save();
     if ($res) {
       $state = $this->id ? "updated" : "created";
@@ -103,5 +104,11 @@ class User extends ActiveRecord
     } catch (Exception $e) {
       return false;
     }
+  }
+
+  function isConfirmedUser()
+  {
+    //if is confirmed, the token is 1, if it's different the user has a token to confirm
+    $this->token === "1"; 
   }
 }

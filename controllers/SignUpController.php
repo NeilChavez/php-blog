@@ -56,7 +56,8 @@ class SignUpController
     if(!$user){
       throw new Exception("Token not valid");
     }
-    $user->token = null;
+    //activated user will have 1 setted as token to communicate that user has confirmed the email
+    $user->token = 1;
     $user->save();
     $router->render("/activate-user");
   }
