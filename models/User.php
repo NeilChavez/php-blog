@@ -52,14 +52,22 @@ class User extends ActiveRecord
     }
     return self::$errors;
   }
-  
+
   function createUser()
   {
     $this->password = password_hash($this->password, PASSWORD_DEFAULT);
     $res = $this->save();
     if ($res) {
-      $state = $this->id ? "updated" : "created";
-      header("Location: /check-your-email");
+      header("Location: /check-your-email?message=created");
+      exit;
+    }
+  }
+
+  function editUser()
+  {
+    $res = $this->save();
+    if ($res) {
+      header("Location: /users/all?message=updated-user-successfully");
       exit;
     }
   }
@@ -109,6 +117,27 @@ class User extends ActiveRecord
   function isConfirmedUser()
   {
     //if is confirmed, the token is 1, if it's different the user has a token to confirm
-    $this->token === "1"; 
+    return $this->token === "1";
+  }
+
+  function deleteUser()
+  {
+    $imagePath = $_SERVER["DOCUMENT_ROOT"] . "/public/images/" . $this->avatar;
+    if(file_exists($imagePath)){
+      unlink($imagePath);
+    }
+    $res = $this->delete();
+    if ($res) {
+      header("Location: /users/all?messagge=user-successfully-deleted");
+    }
+  }
+
+  function setAvatar($fileName)
+  {
+    $this->avatar = $fileName;
+  }
+
+  function setPassword($password){
+    $this->password = $password;
   }
 }
