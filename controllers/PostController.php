@@ -2,6 +2,7 @@
 
 namespace controller;
 
+use helper\FileUploader;
 use model\Post;
 use MVC\Router;
 use Intervention\Image\ImageManager;
@@ -36,40 +37,9 @@ class PostController
     $errors = [];
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
       $post = new Post($_POST);
-      //file validations
-      if (!count($_FILES) > 0) {
-        $errors[] = "You need to upload an image";
-      }
-      if ($_FILES["file"]["size"] > 8388608) {
-        $errors[] = "The file uploaded is too big, max 8MB";
-      }
-      $allowedFiles = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
-      if (!$post->featured_image && !in_array($_FILES["file"]["type"], $allowedFiles)) {
-        $errors[] = "The format is not valid";
-      }
-      //upload image only if it passes validations
-      if (!count($errors) > 0) {
-        //upload new file
-        $fileImageName = $_FILES["file"]["name"];
-        //generate directory for images
-        $imagesPath =  $_SERVER["DOCUMENT_ROOT"] . "/src/images/";
-        if (!is_dir($imagesPath)) {
-          mkdir($imagesPath);
-        }
-        if ($fileImageName) {
-          $oldImage = $imagesPath . $post->featured_image;
-          //if the post entity has already an image and the user want to upload a new image, so we need to delete the "old" image
-          if ($post->featured_image) {
-            is_file($oldImage) && unlink($oldImage);
-          }
-          $temp = $_FILES["file"]["tmp_name"];
-          $manager = new ImageManager(new Driver());
-          $image = $manager->read($temp);
-          $randomName = uniqid(rand(), true) . ".jpeg";
-          $image->save($imagesPath . $randomName);
-          $post->setImage($randomName);
-        }
-      }
+      $fileName = $_FILES["file"]["name"];
+      ["errors" => $errors, "imageName" => $imageName] = FileUploader::upload($fileName, $post->featured_image);
+      $post->setImage($imageName);
       $errors = array_merge($post->validate(), $errors);
       if (empty($errors)) {
         $post->savePost();
@@ -93,40 +63,9 @@ class PostController
     $errors = [];
      if($_SERVER["REQUEST_METHOD"] === "POST"){
        $post->sincronize($_POST);
-      //file validations
-      if (!count($_FILES) > 0) {
-        $errors[] = "You need to upload an image";
-      }
-      if ($_FILES["file"]["size"] > 8388608) {
-        $errors[] = "The file uploaded is too big, max 8MB";
-      }
-      $allowedFiles = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
-      if (!$post->featured_image && !in_array($_FILES["file"]["type"], $allowedFiles)) {
-        $errors[] = "The format is not valid";
-      }
-      //upload image only if it passes validations
-      if (!count($errors) > 0) {
-        //upload new file
-        $fileImageName = $_FILES["file"]["name"];
-        //generate directory for images
-        $imagesPath =  $_SERVER["DOCUMENT_ROOT"] . "/src/images/";
-        if (!is_dir($imagesPath)) {
-          mkdir($imagesPath);
-        }
-        if ($fileImageName) {
-          $oldImage = $imagesPath . $post->featured_image;
-          //if the post entity has already an image and the user want to upload a new image, so we need to delete the "old" image
-          if ($post->featured_image) {
-            is_file($oldImage) && unlink($oldImage);
-          }
-          $temp = $_FILES["file"]["tmp_name"];
-          $manager = new ImageManager(new Driver());
-          $image = $manager->read($temp);
-          $randomName = uniqid(rand(), true) . ".jpeg";
-          $image->save($imagesPath . $randomName);
-          $post->setImage($randomName);
-        }
-      }
+      $fileName = $_FILES["file"]["name"];
+      ["errors" => $errors, "imageName" => $imageName] = FileUploader::upload($fileName, $post->featured_image);
+      $post->setImage($imageName);
       $errors = array_merge($post->validate(), $errors);
       if (empty($errors)) {
         $post->savePost();
