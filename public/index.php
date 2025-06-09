@@ -2,6 +2,7 @@
 include __DIR__ . "/../config/app.php";
 
 use MVC\Router;
+use controller\UserController;
 use controller\AuthController;
 use controller\PageController;
 use controller\PostController;
@@ -39,6 +40,13 @@ $router->get("/activate-user", [SignUpController::class, "activateUser"]);
 //Users logout
  $router->get("/logout", [AuthController::class, "logout"]);
 
-//dashboard
+//Crud users
+$router->get("/users/all", [UserController::class, "readAll"]);
+$router->get("/users/create", [userController::class, "createUser"]);
+$router->post("/users/create", [userController::class, "createUser"]);
+$router->get("/users/edit", [userController::class, "editUser"]);
+$router->post("/users/edit", [userController::class, "editUser"]);
+$router->post("/users/delete", [userController::class, "deleteUser"]);
+$router->get("/user", [userController::class, "findSingleUser"]);
 
 $router->checkRoutes();
