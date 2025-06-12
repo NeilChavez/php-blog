@@ -24,6 +24,7 @@ class AuthController
         $passMatches = password_verify($passwordEntered, $user->password);
         if ($user && $passMatches) {
           session_start();
+          $_SESSION["id"] = $user->id;
           $_SESSION["user"] = $user->username;
           $_SESSION["email"] = $user->email;
           $_SESSION["role"] = $user->role;
