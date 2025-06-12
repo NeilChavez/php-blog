@@ -15,7 +15,7 @@ class Post extends ActiveRecord
   public $created_at;
   public $updated_at;
   public $user_id;
-
+  public $comments = [];
 
   static $table = "posts";
   static $columns = ["id", "title", "slug", "featured_image", "content", "status", "created_at", "updated_at", "user_id"];
@@ -112,5 +112,48 @@ class Post extends ActiveRecord
       header("Location: /home?message=deleted-with-success");
       exit;
     }
+  }
+  static function withComments($id)
+  {
+    $query = " SELECT 
+     p.id, u.username as postAuthor, p.title, p.slug, p.featured_image, p.content, p.status, p.created_at, p.updated_at, c.id as commentId, c.content as comment, us.username as commentAuthor, us.id as commentUserId
+    FROM 
+      posts p
+    LEFT JOIN 
+      comments c
+    ON p.id = c.post_id
+    LEFT JOIN
+      users u
+    ON p.user_id = u.id
+    LEFT JOIN
+      users us
+    ON c.user_id = us.id
+    WHERE p.id = " . self::sanitizeValue($id) . ";";
+    $res =  self::$db->query($query);
+    $res = $res->fetch_all(MYSQLI_ASSOC);
+    $postWithComments = $res;
+    // we take the first row of the results, since we have more rows with the same post information but with the different comment information
+    $post = array_shift($res);
+    /**
+     * @var Post $post
+     */
+    $post = new self($post);
+    $comments = [];
+    foreach ($postWithComments as $entity) {
+      [
+        "comment" => $content,
+        "commentAuthor" => $username,
+        "commentId" => $id,
+        "commentUserId" => $user_id
+      ] = $entity;
+      $comments[] = new Comment([
+        "id" => $id,
+        "content" => $content,
+        "username" => $username,
+        "user_id" => $user_id
+      ]);
+    }
+    $post->comments = $comments;
+    return $post;
   }
 }
