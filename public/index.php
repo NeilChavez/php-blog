@@ -4,6 +4,7 @@ include __DIR__ . "/../config/app.php";
 use MVC\Router;
 use controller\UserController;
 use controller\AuthController;
+use controller\CommentController;
 use controller\PageController;
 use controller\PostController;
 use controller\SignUpController;
@@ -48,5 +49,11 @@ $router->get("/users/edit", [userController::class, "editUser"]);
 $router->post("/users/edit", [userController::class, "editUser"]);
 $router->post("/users/delete", [userController::class, "deleteUser"]);
 $router->get("/user", [userController::class, "findSingleUser"]);
+
+//Crud comments
+$router->post("/comment/create", [CommentController::class, "create"]);
+$router->get("/comment/update", [CommentController::class, "update"]);
+$router->post("/comment/update", [CommentController::class, "update"]);
+$router->post("/comment/delete",[CommentController::class, "delete"]);
 
 $router->checkRoutes();
