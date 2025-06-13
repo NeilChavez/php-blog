@@ -2,9 +2,10 @@
 
 namespace controller;
 
-use helper\FileUploader;
 use model\Post;
 use MVC\Router;
+use model\Comment;
+use helper\FileUploader;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 
@@ -23,7 +24,7 @@ class PostController
   {
     $id = filter_var($_GET["id"], FILTER_VALIDATE_INT);
     if (!$id) throw new \Exception("Post ID not valid");
-    $post = Post::find($id);
+    $post = Post::withComments($id);
     $router->render(
       "/post",
       [
@@ -61,8 +62,8 @@ class PostController
      */
     $post = Post::find($id);
     $errors = [];
-     if($_SERVER["REQUEST_METHOD"] === "POST"){
-       $post->sincronize($_POST);
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+      $post->sincronize($_POST);
       $fileName = $_FILES["file"]["name"];
       ["errors" => $errors, "imageName" => $imageName] = FileUploader::upload($fileName, $post->featured_image);
       $post->setImage($imageName);
@@ -70,22 +71,22 @@ class PostController
       if (empty($errors)) {
         $post->savePost();
       }
-     }
+    }
     $router->render("/post/update", [
       "errors" => $errors,
       "post" => $post
     ]);
   }
-  
+
   static function deletePost()
   {
     $id = filter_var($_GET["id"], FILTER_VALIDATE_INT);
     if (!$id) throw new \Exception("ID not valid");
     /**
-      * @var Post $post
+     * @var Post $post
      */
     $post = Post::find($id);
-    if(!$post){
+    if (!$post) {
       echo "Post Not Founded";
       return;
     }
