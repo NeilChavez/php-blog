@@ -83,7 +83,8 @@ class Post extends ActiveRecord
   function savePost(): void
   {
     $this->slug = $this->generateSlug($this->title);
-    $this->user_id = 1; //TODO take the actual user
+    @session_start();
+    $this->user_id = $_SESSION["id"];
     $res = $this->save();
     if ($res) {
       $state = $this->id ? "updated" : "created";
