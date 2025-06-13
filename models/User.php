@@ -128,7 +128,7 @@ class User extends ActiveRecord
     }
     $res = $this->delete();
     if ($res) {
-      header("Location: /users/all?messagge=user-successfully-deleted");
+      header("Location: /users/all?message=user-successfully-deleted");
     }
   }
 
