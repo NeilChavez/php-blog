@@ -4,6 +4,7 @@ include __DIR__ . "/../config/app.php";
 use MVC\Router;
 use controller\UserController;
 use controller\AuthController;
+use controller\CategoryController;
 use controller\CommentController;
 use controller\PageController;
 use controller\PostController;
@@ -55,5 +56,11 @@ $router->post("/comment/create", [CommentController::class, "create"]);
 $router->get("/comment/update", [CommentController::class, "update"]);
 $router->post("/comment/update", [CommentController::class, "update"]);
 $router->post("/comment/delete",[CommentController::class, "delete"]);
+
+//Crud Category
+$router->get("/categories/all", [CategoryController::class, "readAll"]);
+$router->get("/category/create", [CategoryController::class, "create"]);
+$router->post("/category/create", [CategoryController::class, "create"]);
+$router->post("/category/delete", [CategoryController::class, "delete"]);
 
 $router->checkRoutes();
