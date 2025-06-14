@@ -26,6 +26,16 @@ class Router
     $urlTokenized = strtok($_SERVER["REQUEST_URI"], "?");
     $url = $urlTokenized === "/" ? "/home" : $urlTokenized;
     $method = $_SERVER["REQUEST_METHOD"];
+    $protectedRoutes = ["/dashboard", "/post/create", "/post/edit", "/posts/delete", "/logout", "/users/create", "/users/edit", "/users/delete", "/comment/create", "/comment/update", "/comment/delete", "/categories/all", "/category/create", "/category/delete"];
+    $isLoggedIn = false;
+    @session_start();
+    if (isset($_SESSION["user"])) {
+      $isLoggedIn = true;
+    }
+    if(in_array($url, $protectedRoutes) && !$isLoggedIn){
+      header("Location: /login");
+      exit;
+    }   
     $fn = "";
     if ($method === "GET") {
       $fn = $this->GET_routes[$url] ?? null;
