@@ -125,6 +125,18 @@ class ActiveRecord
     return $entity;
   }
 
+  static function consultSQL($query){
+    $res = self::$db->query($query)->fetch_all(MYSQLI_ASSOC);
+    if (!$res) {
+      throw new ErrorException("Query not successfull");
+    }
+    $results = [];
+    foreach ($res as $row) {
+      $results[] = self::createObject($row);
+    }
+    return $results;
+  }
+
   function sincronize($args = [])
   {
     foreach ($args as $key => $value) {
