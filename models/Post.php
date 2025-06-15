@@ -157,4 +157,17 @@ class Post extends ActiveRecord
     $post->comments = $comments;
     return $post;
   }
+  static function findByCategory()
+  {
+    $category = $_GET["category"] ?? "";
+    $category = filter_var($category, FILTER_SANITIZE_SPECIAL_CHARS);
+    $postsByCategory = "SELECT posts.title, posts.slug, posts.featured_image, posts.status, posts.created_at, posts.updated_at FROM categories_has_posts
+   LEFT JOIN
+  posts 
+  ON 
+   	categories_has_posts.post_id = posts.id
+   WHERE category_id = '1'
+  	;";
+  }
+
 }
