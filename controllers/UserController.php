@@ -12,8 +12,11 @@ class UserController
   static function readAll(Router $router)
   {
     $users = User::getAll();
+    @session_start();
+    $isAdmin = isset($_SESSION["role"]) && $_SESSION["role"] === "admin";
     $router->render("/users/all-users", [
-      "users" => $users
+      "users" => $users,
+      "isAdmin" => $isAdmin
     ]);
   }
 
