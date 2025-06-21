@@ -26,7 +26,7 @@ class User extends ActiveRecord
   {
     $this->id = $args["id"] ?? null;
     $this->username = isset($args["username"]) ? trim($args["username"]) : "";
-    $this->avatar = $args["avatar"] ?? "";
+    $this->avatar = $args["avatar"] ?? null;
     $this->email = isset($args["email"]) ? trim($args["email"]) : "";
     $this->password = $args["password"] ?? "";
     $this->role = $args["role"] ?? "subscriber"; // by default subscriber
@@ -67,7 +67,7 @@ class User extends ActiveRecord
   {
     $res = $this->save();
     if ($res) {
-      header("Location: /users/all?message=updated-user-successfully");
+      header("Location: /dashboard/users");
       exit;
     }
   }
@@ -128,7 +128,7 @@ class User extends ActiveRecord
     }
     $res = $this->delete();
     if ($res) {
-      header("Location: /users/all?message=user-successfully-deleted");
+      header("Location: /dashboard/users");
     }
   }
 
