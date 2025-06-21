@@ -6,7 +6,7 @@
       <header class="header">
         <div>
           <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-          <h1 id="pageTitle">Update post</h1>
+          <h1 id="pageTitle">Create user</h1>
         </div>
       </header>
       <?php require "form.php"; ?>

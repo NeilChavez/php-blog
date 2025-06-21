@@ -1,51 +1,69 @@
     <div class="dashboard">
 
-      <?php require "sidebar.php"; ?>
+      <?php require __DIR__ . "/../layout.php"; ?>
       <!-- Main Content -->
       <main class="main-content" id="mainContent">
         <!-- Header -->
         <header class="header">
           <div>
+            <!-- TODO change toggle onclick online -->
             <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-            <h1 id="pageTitle">Dashboard</h1>
+            <h1 id="pageTitle">All users</h1>
           </div>
         </header>
-
-
         <!-- Users Section -->
         <section id="users" class="content-section active">
           <div class="section-header">
-            <h2>Gestione Utenti</h2>
-            <button class="btn btn-primary" onclick="showAddModal('user')">+ Nuovo Utente</button>
+            <h2>Manage users</h2>
+            <a href="/dashboard/users/create" class="btn btn-primary">+ New user</a>
           </div>
           <div class="table-container">
-
-
             <table id="usersTable">
               <thead>
                 <tr>
-                  <th>Nome</th>
+                  <th>Avatar</th>
+                  <th>Name</th>
                   <th>Email</th>
-                  <th>Ruolo</th>
-                  <th>Status</th>
-                  <th>Data Registrazione</th>
-                  <th>Azioni</th>
+                  <th>Role</th>
+                  <th>Last update</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="usersTableBody">
+                <?php foreach ($users as $user): ?>
+                  <tr>
+                    <td style="  
+                    padding: 0 0.5rem;
+                    aspect-ratio: 1 / 1;
+     position: relative;
+     width: 50px;
+     height: 50px;
+  ">
+                      <img style="
+                      	    width: 50px;
+     height: 50px;
+     border-radius: 100%;
+     position:absolute;
+     object-fit: cover;
+     left: 50%;
+     top: 50%;
+     transform: translate(-50%, -60%);"
+                        src="/src/images/<?php echo $user->avatar ?>" alt="failed">
 
-                <tr>
-
-                  <td>${post.title}</td>
-                  <td>${post.category}</td>
-                  <td>${post.author}</td>
-                  <td><span class="status-badge status-${post.status}">${post.status === 'published' ? 'Pubblicato' : 'Bozza'}</span></td>
-                  <td>${formatDate(post.date)}</td>
-                  <td>
-                    <button class="btn btn-small btn-primary">Modifica</button>
-                    <button class="btn btn-small btn-danger">Delete</button>
-                  </td>
-                </tr>
+                    </td>
+                    <td><?php echo $user->username ?></td>
+                    <td><?php echo $user->email ?></td>
+                    <td><?php echo $user->role ?></td>
+                    <td><?php echo $user->update_at ?? $user->created_at ?></td>
+                    <td>
+                      <a href="/dashboard/users/edit?id=<?php echo $user->id ?>" class="btn btn-small btn-primary">Edit</a>
+                      <form action="/dashboard/users/delete" method="POST">
+                        <input type="hidden" value="<?php echo $user->id ?>" name="id">
+                        <button class="btn btn-small btn-danger">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
               </tbody>
             </table>
           </div>

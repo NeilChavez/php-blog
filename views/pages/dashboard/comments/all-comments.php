@@ -1,5 +1,4 @@
     <div class="dashboard">
-
       <?php require __DIR__ . "/../layout.php"; ?>
       <!-- Main Content -->
       <main class="main-content" id="mainContent">
@@ -62,7 +61,7 @@
             </table>
             <?php if (count($comments) === 0): ?>
               <div class="text-center padding-top">
-                <b class="center">There are no comments to see</b>
+                <b class="center">There aren't comments to see</b>
             </div>
             <?php endif ?>
           </div>
