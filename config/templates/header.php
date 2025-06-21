@@ -4,6 +4,7 @@
       <div id="authButtons">
         <?php if ($isLoggedIn): ?>
           <span style="color: var(--text-primary); margin-right: 10px;">Hello, <?php echo $_SESSION["user"] ?? "user"; ?>!</span>
+          <a href="/dashboard" class="btn btn-primary">Dashboard</a>
           <a href="#" class="btn btn-secondary">Logout</a>
         <?php else: ?>
           <a href="/login" class="btn btn-secondary">Login</a>
