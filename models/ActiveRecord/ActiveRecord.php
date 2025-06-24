@@ -125,7 +125,21 @@ class ActiveRecord
     return $entity;
   }
 
-  static function consultSQL($query){
+  static function where($key, $value)
+  {
+    $key = self::sanitizeValue($key);
+    $value = self::sanitizeValue($value);
+    $query = "SELECT * FROM " . static::$table . " WHERE " . $key . " = '" . $value . "';";
+    $res = self::$db->query($query)->fetch_all(MYSQLI_ASSOC);
+    $results = [];
+    foreach ($res as $row) {
+      $results[] = self::createObject($row);
+    }
+    return $results;
+  }
+
+  static function consultSQL($query)
+  {
     $res = self::$db->query($query)->fetch_all(MYSQLI_ASSOC);
     if (!$res) {
       throw new ErrorException("Query not successfull");
@@ -135,6 +149,13 @@ class ActiveRecord
       $results[] = self::createObject($row);
     }
     return $results;
+  }
+
+  static function count()
+  {
+    $query = "SELECT COUNT(id) as " . static::$table . " FROM " . static::$table;
+    $res = self::$db->query($query)->fetch_all(MYSQLI_ASSOC);
+    return array_shift($res);
   }
 
   function sincronize($args = [])
