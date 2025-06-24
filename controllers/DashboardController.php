@@ -12,33 +12,50 @@ class DashboardController
 {
   static function posts(Router $router)
   {
-
-    $posts = Post::getAll();
-    $router->render("dashboard/posts", [
-      "posts" => $posts
+    $isAdmin = $_SESSION["role"] === "admin";
+    $userId = $_SESSION["id"];
+    $posts = [];
+    if ($isAdmin) {
+      $posts = Post::getAll();
+    } else {
+      $posts = Post::where("user_id", $userId);
+    }
+    $categories = Category::getAll();
+    $router->render("dashboard/posts/all-posts", [
+      "posts" => $posts,
+      "categories" => $categories
     ]);
   }
 
   static function categories(Router $router)
   {
     $categories = Category::getAll();
-    $router->render("dashboard/categories", [
+    $router->render("dashboard/categories/all-categories", [
       "categories" => $categories
     ]);
   }
 
+  
+
   static function comments(Router $router)
   {
-    $camments = Comment::getAll();
-    $router->render("dashboard/comments", [
-      "comments" => $camments
+    $isAdmin = $_SESSION["role"] === "admin";
+    $userId = $_SESSION["id"];
+    $comments = [];
+    if ($isAdmin) {
+      $comments = Comment::getAll();
+    } else {
+      $comments = Comment::where("user_id", $userId);
+    }
+    $router->render("dashboard/comments/all-comments", [
+      "comments" => $comments
     ]);
   }
 
   static function users(Router $router)
   {
     $users = User::getAll();
-    $router->render("dashboard/users", [
+    $router->render("dashboard/users/all-users", [
       "users" => $users
     ]);
   }
@@ -47,7 +64,7 @@ class DashboardController
   static function commentsToApprove(Router $router)
   {
     $cammentsToApprove = Comment::findBy(["status" => "draft"]);
-    $router->render("dashboard/comments", [
+    $router->render("dashboard/comments/to-approve", [
       "cammentsToApprove" => $cammentsToApprove
     ]);
   }
