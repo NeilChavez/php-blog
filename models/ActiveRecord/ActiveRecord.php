@@ -33,9 +33,16 @@ class ActiveRecord
   }
 
   //read
-  static function getAll(): array
+  static function getAll($options = []): array
   {
-    $res = self::$db->query("SELECT * FROM " . static::$table)->fetch_all(MYSQLI_ASSOC);
+    $query = "SELECT * FROM " . static::$table;
+    if(count($options) > 0)
+    {
+      $query .= $options["order"] ? " ORDER BY " . $options["order"] : "";
+      $query .= $options["limit"] ? " LIMIT " . $options["limit"] :  "";
+    }
+    $query .= ";";
+    $res = self::$db->query($query)->fetch_all(MYSQLI_ASSOC);
     if (!$res) {
       throw new ErrorException("Query not successfull");
     }
