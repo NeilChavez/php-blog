@@ -26,13 +26,13 @@ class Router
     $urlTokenized = strtok($_SERVER["REQUEST_URI"], "?");
     $url = $urlTokenized === "/" ? "/home" : $urlTokenized;
     $method = $_SERVER["REQUEST_METHOD"];
-    $protectedRoutes = ["/dashboard", "/post/create", "/post/edit", "/posts/delete", "/logout", "/users/create", "/users/edit", "/users/delete", "/comment/create", "/comment/update", "/comment/delete", "/categories/all", "/category/create", "/category/delete"];
+    $protectedRoutes = "/dashboard";
     $isLoggedIn = false;
     @session_start();
     if (isset($_SESSION["user"])) {
       $isLoggedIn = true;
     }
-    if(in_array($url, $protectedRoutes) && !$isLoggedIn){
+    if(str_starts_with($url, $protectedRoutes) && !$isLoggedIn){
       header("Location: /login");
       exit;
     }   
@@ -54,7 +54,7 @@ class Router
   private function notFound()
   {
     http_response_code(404);
-    echo "Page not found";
+    $this->render("/blog/404");
   }
 
   public function render($view, $args = []) {
