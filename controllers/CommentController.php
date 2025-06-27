@@ -2,6 +2,8 @@
 
 namespace controller;
 
+use helper\CheckPermission;
+use model\User;
 use model\Post;
 use MVC\Router;
 use model\Comment;
@@ -18,9 +20,13 @@ class CommentController
       //retreive the post
       $errors = array_merge($errors, $comment->validate());
       if (empty($errors)) {
+        //check if the current user can do this action,
+        //if not, he will be redirected by CheckPermission class
+        //to a "Not Authorized" page
+        CheckPermission::canCreate();
         // save the comment
         $comment->save();
-        header("Location: /post?id=" . $post_id . "&message=comment-correctly-inserted");
+        header("Location: /post?id=" . $post_id . "&message=comment-correctly-inserted#success-badge");
         exit;
       } else {
         // we need to render the page again, 
@@ -31,7 +37,7 @@ class CommentController
     $router->render("post", [
       "errors" => $errors,
       "post" => $post,
-      "action" => "create" 
+      "action" => "create"
     ]);
   }
   static function update(Router $router)
@@ -43,18 +49,23 @@ class CommentController
       return $comment->id === $targeteCommentId;
     });
     $targetComment = array_shift($targetComment);
-    if($_SERVER["REQUEST_METHOD"] === "POST"){
+    // check if the current user can do this action,
+    // if not, he will be redirected by CheckPermission class
+    // to a "Not Authorized" page
+    CheckPermission::canEdit($targetComment);
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
       $targetComment->sincronize($_POST);
       $targetComment->updated_at = $targetComment->now();
       $errors = $targetComment->validate();
-      if(empty($errors)){
+      if (empty($errors)) {
         $targetComment->save();
-        header("location: /post?id=".$id."&message=comment-updated-successfully#". $targetComment->id);
+
+        header("Location: /post?id=" . $id . "&message=comment-updated-successfully#" . $targetComment->id);
         exit;
       }
     }
 
-    $router->render("post", [
+    $router->render("/blog/post", [
       "post" => $post,
       "targetComment" => $targetComment,
       "action" => "update"
@@ -62,17 +73,79 @@ class CommentController
   }
   static function delete()
   {
-     if ($_SERVER["REQUEST_METHOD"] === "POST") {
-       $commentId = $_POST["comment_id"];
-      $postId = $_POST["post_id"];
-       $comment = Comment::find($commentId);
-       if($comment){
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+      $commentId = filter_var($_POST["comment_id"], FILTER_VALIDATE_INT);
+      if (!$commentId) {
+        header("Location: /error");
+      }
+      $postId = $_POST["post_id"] ?? null;
+      $comment = Comment::find($commentId);
+      if ($comment) {
+        // check if the current user can do this action,
+        // if not, he will be redirected by CheckPermission class
+        // to a "Not Authorized" page
+        CheckPermission::canDelete($comment);
         $res = $comment->delete();
-        if($res){
-          header("Location: /post?id=" . $postId. "&message=comment-deleted-successfully");
+        if ($res && str_starts_with($_SERVER["REQUEST_URI"], "/dashboard")) {
+          header("Location: /dashboard/comments?id=" . $postId . "&message=comment-deleted");
           exit;
         }
-       }
-     }
+        if ($res) {
+          header("Location: /post?id=" . $postId . "&message=comment-deleted#success-badge");
+          exit;
+        }
+      }
+    }
+  }
+
+  static function approve()
+  {
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+      $id = filter_var($_POST["comment_id"], FILTER_VALIDATE_INT);
+      if (!$id) {
+        header("Location: /blog/error");
+        exit;
+      }
+      /**
+       * @var Comment $comment
+       */
+      $comment = Comment::find($id);
+      $comment->status = "published";
+      $res = $comment->save();
+      if ($res) {
+        header("Location: /dashboard/comments/to-approve");
+        exit;
+      }
+    }
+  }
+
+  static function unapprove()
+  {
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+      $id = filter_var($_POST["comment_id"], FILTER_VALIDATE_INT);
+      if (!$id) {
+        header("Location: /blog/error");
+        exit;
+      }
+      /**
+       * @var Comment $comment
+       */
+      $comment = Comment::find($id);
+      $comment->status = "draft";
+      $res = $comment->save();
+      if ($res) {
+        header("Location: /dashboard/comments");
+        exit;
+      }
+    }
+  }
+
+  static function toApprove(Router $router)
+  {
+    $comments = [];
+    $comments = Comment::where("status", "draft");
+    $router->render("dashboard/comments/all-comments", [
+      "comments" => $comments
+    ]);
   }
 }
