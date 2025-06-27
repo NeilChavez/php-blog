@@ -2,20 +2,19 @@
 
 namespace controller;
 
+use helper\CheckPermission;
 use model\Post;
+use model\User;
 use MVC\Router;
-use model\Comment;
 use helper\FileUploader;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
+use model\Category;
 
 class PostController
 {
   static function readAll(Router $router)
   {
     $posts = Post::getAll();
-
-    $router->render("/post/all-posts", [
+    $router->render("/dashboard/posts/all-posts", [
       "posts" => $posts
     ]);
   }
@@ -26,7 +25,7 @@ class PostController
     if (!$id) throw new \Exception("Post ID not valid");
     $post = Post::withComments($id);
     $router->render(
-      "/post",
+      "/blog/post",
       [
         "post" => $post
       ]
@@ -35,6 +34,7 @@ class PostController
   static function createPost(Router $router)
   {
     $post = new Post();
+    $categories = Category::getAll();
     $errors = [];
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
       $post = new Post($_POST);
@@ -46,9 +46,10 @@ class PostController
         $post->savePost();
       }
     }
-    $router->render("/post/create", [
+    $router->render("/dashboard/posts/create", [
       "errors" => $errors,
-      "post" => $post
+      "post" => $post,
+      "categories" => $categories
     ]);
   }
 
@@ -62,6 +63,7 @@ class PostController
      */
     $post = Post::find($id);
     $errors = [];
+    CheckPermission::canEdit($post);
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
       $post->sincronize($_POST);
       $fileName = $_FILES["file"]["name"];
@@ -72,7 +74,7 @@ class PostController
         $post->savePost();
       }
     }
-    $router->render("/post/update", [
+    $router->render("/dashboard/posts/update", [
       "errors" => $errors,
       "post" => $post
     ]);

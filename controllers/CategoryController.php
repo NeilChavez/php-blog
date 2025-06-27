@@ -10,7 +10,7 @@ class CategoryController
   static function readAll(Router $router)
   {
     $categories = Category::getAll();
-    $router->render("/categories/all-categories", [
+    $router->render("/dashboard/categories/all-categories", [
       "categories" => $categories
     ]);
   }
@@ -24,12 +24,12 @@ class CategoryController
       if (empty($errors)) {
         $res = $category->save();
         if ($res) {
-          header("Location: /categories/all");
+          header("Location: /dashboard/categories");
           exit;
         }
       }
     }
-    $router->render("categories/create", [
+    $router->render("/dashboard/categories/create", [
       "category" => $category,
       "errors" => $errors
     ]);
@@ -37,7 +37,12 @@ class CategoryController
 
   static function update(Router $router)
   {
-    $category = new Category;
+    $id = filter_var($_GET["id"], FILTER_VALIDATE_INT);
+    if (!$id) throw new \Exception("Post ID not valid");
+    /**
+     * @var Category $category
+     */
+    $category = Category::find($id);
     $errors = [];
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
       $category->sincronize($_POST);
@@ -45,12 +50,12 @@ class CategoryController
       if (empty($errors)) {
         $res = $category->save();
         if ($res) {
-          header("Location: /categories/all-categories");
+          header("Location: /dashboard/categories/all");
           exit;
         }
       }
     }
-    $router->render("categories/create", [
+    $router->render("dashboard/categories/create", [
       "category" => $category,
       "errors" => $errors
     ]);
@@ -62,7 +67,7 @@ class CategoryController
       $category =  Category::find($id);
       if ($category) {
         $category->delete();
-        header("Location: /categories/all?message=success-category-deleted");
+        header("Location: /dashboard/categories?message=category-deleted");
         exit;
       }
     }

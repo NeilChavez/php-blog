@@ -21,20 +21,25 @@ class AuthController
          * @var User|bool $user
          */
         $user = User::findBy(["email" => $user->email]);
-        $passMatches = password_verify($passwordEntered, $user->password);
-        if ($user && $passMatches) {
+        $passwordMatches = password_verify($passwordEntered, $user->password);
+        if (!$user || !$passwordMatches) {
+          $errors[] = "Some of your info isn't correct. Please try again.";
+        } elseif ($user && !$user->isConfirmedUser()) {
+          header("Location: /blog/
+          -your-email");
+          exit;
+        } elseif ($passwordMatches) {
           session_start();
           $_SESSION["id"] = $user->id;
           $_SESSION["user"] = $user->username;
           $_SESSION["email"] = $user->email;
           $_SESSION["role"] = $user->role;
-          header("Location: /dashboard?username=$user->username");
-        } else {
-          $errors[] = "Your credential are not correct.";
+          header("Location: /dashboard");
+          exit;
         }
       }
     }
-    $router->render("/login", [
+    $router->render("/blog/login", [
       "errors" => $errors
     ]);
   }

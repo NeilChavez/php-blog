@@ -18,34 +18,36 @@ class SignUpController
       $errors = $user->validate();
       //check if the user already exists
       $emailAlreadyExists = User::findBy(["email" => $user->email]);
-      if ($emailAlreadyExists) {
-        $errors[] = "Email already exists.";
-      }
-      //check if the usersname is already used
       $usernameAlreadyUsed = User::findBy(["username" => $user->username]);
-      if ($usernameAlreadyUsed) {
-        $errors[] = "Username already exists.";
+      if ($usernameAlreadyUsed || $emailAlreadyExists) {
+        $errors[] = "Username or email already exists.";
       }
       if (empty($errors)) {
         $user->createToken();
-        $res = $user->sendVerificationEmail($user->email, $user->token);
-        if($res){
-          echo "mail sended";
+        $user->password = password_hash($user->password, PASSWORD_BCRYPT);
+        $res = $user->save();
+        if (!$res) {
+          header("Location: /blog/error");
+          exit;
         }
-        $user->createUser();
+        $res = $user->sendVerificationEmail($user->email, $user->token);
+        if ($res) {
+          header("Location: /blog/check-your-email");
+          exit;
+        }
       }
     }
-    $router->render("/sign-up", [
+    $router->render("/blog/sign-up", [
       "errors" => $errors,
       "user" => $user
     ]);
   }
-  
+
   static function checkYouEmail(Router $router)
   {
-    $router->render("/check-your-email");
+    $router->render("/blog/check-your-email");
   }
-  
+
   static function activateUser(Router $router)
   {
     $token = $_GET["token"];
@@ -53,12 +55,12 @@ class SignUpController
      * @var User $user 
      */
     $user = User::findBy(["token" => $token]);
-    if(!$user){
+    if (!$user) {
       throw new Exception("Token not valid");
     }
     //activated user will have 1 setted as token to communicate that user has confirmed the email
     $user->token = 1;
     $user->save();
-    $router->render("/activate-user");
+    $router->render("/blog/activate-user");
   }
 }

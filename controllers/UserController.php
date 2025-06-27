@@ -36,10 +36,15 @@ class UserController
         if ($res) {
           echo "mail sended";
         }
-        $user->createUser();
+        $user->password = password_hash($user->password, PASSWORD_BCRYPT);
+        $res = $user->save();
+        if (!$res) {
+          header("Location: /blog/error");
+          exit;
+        }
       }
     }
-    $router->render("/users/create", [
+    $router->render("/dashboard/users/create", [
       "user" => $user,
       "errors" => $errors
     ]);
@@ -63,10 +68,16 @@ class UserController
       $user->setAvatar($imageName);
       $errors = array_merge($errors, $user->validate());
       if (empty($errors)) {
-        $user->editUser();
+        $res = $user->save();
+        if (!$res) {
+          header("Location: /blog/error");
+          exit;
+        }
+        header("Location: /dashboard/users?message=edited-with-success");
+        exit;
       }
     }
-    $router->render("/users/update", [
+    $router->render("/dashboard/users/update", [
       "user" => $user,
       "errors" => $errors
     ]);
@@ -77,18 +88,26 @@ class UserController
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
       $id = filter_var($_POST["id"], FILTER_VALIDATE_INT);
       if (!$id) {
-        throw new Exception("The user id is not valid");
+        header("Location: /blog/error");
+        exit;
       }
       /**
        * @var User $user
        */
       $user = User::find($id);
-      if($user){
-        $user->deleteUser();
+      if ($user) {
+        $res = $user->deleteUser();
+        if ($res) {
+          header("Location: /dashboard/users?message=deleted-with-success");
+        } else {
+          header("Location: /blog/error");
+        }
+        exit;
       }
     }
   }
-  static function findSingleUser(Router $router){
+  static function findSingleUser(Router $router)
+  {
     $id = filter_var($_GET["id"], FILTER_VALIDATE_INT);
     if (!$id) {
       throw new Exception("The user id is not valid");
