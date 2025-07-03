@@ -110,6 +110,10 @@ class CommentController
        * @var Comment $comment
        */
       $comment = Comment::find($id);
+      // check if the current user can do this action,
+      // if not, he will be redirected by CheckPermission class
+      // to a "Not Authorized" page
+      CheckPermission::canEdit($comment);
       $comment->status = "published";
       $res = $comment->save();
       if ($res) {
@@ -131,6 +135,10 @@ class CommentController
        * @var Comment $comment
        */
       $comment = Comment::find($id);
+      // check if the current user can do this action,
+      // if not, he will be redirected by CheckPermission class
+      // to a "Not Authorized" page
+      CheckPermission::canEdit($comment);
       $comment->status = "draft";
       $res = $comment->save();
       if ($res) {
@@ -142,8 +150,14 @@ class CommentController
 
   static function toApprove(Router $router)
   {
+    $isAdmin = $_SESSION["role"] === "admin";
+    $criteria = ["status" => "draft"];
     $comments = [];
-    $comments = Comment::where("status", "draft");
+    if (!$isAdmin) {
+      $criteria["user_id"] = $_SESSION["id"];
+    }
+    $res = Comment::findBy($criteria);
+    $comments = $res ? $res : [];
     $router->render("dashboard/comments/all-comments", [
       "comments" => $comments
     ]);
