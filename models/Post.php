@@ -12,6 +12,7 @@ class Post extends ActiveRecord
   public $featured_image;
   public $content;
   public $status;
+  // public $category; TODO
   public $created_at;
   public $updated_at;
   public $user_id;
@@ -88,7 +89,7 @@ class Post extends ActiveRecord
     $res = $this->save();
     if ($res) {
       $state = $this->id ? "updated" : "created";
-      header("Location: /home?message=" . $state . "-with-success");
+      header("Location: /dashboard/posts?message=" . $state . "-with-success");
       exit;
     }
   }
@@ -110,7 +111,7 @@ class Post extends ActiveRecord
     $res = $this->delete();
     if ($res) {
       $this->removeImage();
-      header("Location: /home?message=deleted-with-success");
+      header("Location: /dashboard/posts?message=deleted-with-success");
       exit;
     }
   }
@@ -142,32 +143,38 @@ class Post extends ActiveRecord
     $comments = [];
     foreach ($postWithComments as $entity) {
       [
+        "commentId" => $id,
         "comment" => $content,
         "commentAuthor" => $username,
-        "commentId" => $id,
-        "commentUserId" => $user_id
+        "commentUserId" => $user_id,
+        "id" => $post_id
       ] = $entity;
-      $comments[] = new Comment([
-        "id" => $id,
-        "content" => $content,
-        "username" => $username,
-        "user_id" => $user_id
-      ]);
+      if ($content && $username && $id && $user_id) {
+        $comments[] = new Comment([
+          "id" => $id,
+          "content" => $content,
+          "username" => $username,
+          "user_id" => $user_id,
+          "post_id" => $post_id
+        ]);
+      }
     }
     $post->comments = $comments;
     return $post;
   }
-  static function findByCategory()
+  static function findByCategory($category)
   {
-    $category = $_GET["category"] ?? "";
-    $category = filter_var($category, FILTER_SANITIZE_SPECIAL_CHARS);
-    $postsByCategory = "SELECT posts.title, posts.slug, posts.featured_image, posts.status, posts.created_at, posts.updated_at FROM categories_has_posts
-   LEFT JOIN
-  posts 
-  ON 
-   	categories_has_posts.post_id = posts.id
-   WHERE category_id = '1'
-  	;";
-  }
+    $query = "SELECT * FROM categories_has_posts WHERE category_id = " . self::sanitizeValue($category) . ";";
+    $results = self::$db->query($query);
+    $results = $results->fetch_all(MYSQLI_ASSOC);
+    $ids = [];
+    foreach ($results as $result) {
+      $ids[] = $result["post_id"];
+    }
 
+    $ids = implode(", ", $ids);
+    $query = "SELECT * FROM posts WHERE id IN (" . $ids . ");";
+    $posts = self::consultSQL($query);
+    return $posts;
+  }
 }
