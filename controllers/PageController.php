@@ -13,10 +13,12 @@ class PageController
   static function index(Router $router)
   {
     $posts = Post::getAll();
+    $categories = Category::getAll();
     $featuredPosts = array_slice($posts, 3, 3);
     $router->render("blog/home", [
       "title" => "My blog",
       "posts" => $posts,
+      "categories" => $categories,
       "featuredPosts" => $featuredPosts
     ]);
   }
@@ -44,6 +46,18 @@ class PageController
       "categoriesCount" => $categoriesCount,
       "lastsPosts" => $lastsPosts,
       "lastsComments" => $lastsComments
+    ]);
+  }
+
+  public static function byCategories(Router $router)
+  {
+    $id = $_GET["id"] ?? "";
+    $category = $_GET["category"] ?? "";
+    $id = filter_var($id, FILTER_VALIDATE_INT);
+    $posts = Post::findByCategory($id);
+    $router->render("/blog/by-category", [
+      "category" => $category,
+      "posts" => $posts
     ]);
   }
 
