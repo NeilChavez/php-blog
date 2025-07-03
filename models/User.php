@@ -53,25 +53,6 @@ class User extends ActiveRecord
     return self::$errors;
   }
 
-  function createUser()
-  {
-    $this->password = password_hash($this->password, PASSWORD_DEFAULT);
-    $res = $this->save();
-    if ($res) {
-      header("Location: /check-your-email?message=created");
-      exit;
-    }
-  }
-
-  function editUser()
-  {
-    $res = $this->save();
-    if ($res) {
-      header("Location: /dashboard/users");
-      exit;
-    }
-  }
-
   function createToken()
   {
     $token = bin2hex(random_bytes(50));
@@ -100,7 +81,7 @@ class User extends ActiveRecord
       $content .= "<body>";
       $content .= "<h1>Welcome to our blog!</h1>";
       $content .= "<p>Here you have the link to activate your user:</p>";
-      $content .= "<a style='border: 2px solid blue;' href='" . DOMAIN_NAME . "/activate-user?token=" . $token . "'>";
+      $content .= "<a style='border: 2px solid blue;' href='" . DOMAIN_NAME . "/blog/activate-user?token=" . $token . "'>";
       $content .= "Active you account!";
       $content .= "</a>";
       $content .= "</body>";
@@ -127,9 +108,7 @@ class User extends ActiveRecord
       unlink($imagePath);
     }
     $res = $this->delete();
-    if ($res) {
-      header("Location: /dashboard/users");
-    }
+    return $res;
   }
 
   function setAvatar($fileName)
