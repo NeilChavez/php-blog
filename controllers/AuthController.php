@@ -25,8 +25,7 @@ class AuthController
         if (!$user || !$passwordMatches) {
           $errors[] = "Some of your info isn't correct. Please try again.";
         } elseif ($user && !$user->isConfirmedUser()) {
-          header("Location: /blog/
-          -your-email");
+          header("Location: /blog/check-your-email");
           exit;
         } elseif ($passwordMatches) {
           session_start();
