@@ -33,6 +33,7 @@ class PostController
   }
   static function createPost(Router $router)
   {
+    CheckPermission::canCreatePost();
     $post = new Post();
     $categories = Category::getAll();
     $errors = [];
@@ -63,7 +64,7 @@ class PostController
      */
     $post = Post::find($id);
     $errors = [];
-    CheckPermission::canEdit($post);
+    CheckPermission::canEditPost($post, "edit");
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
       $post->sincronize($_POST);
       $fileName = $_FILES["file"]["name"];
@@ -76,7 +77,7 @@ class PostController
     }
     $router->render("/dashboard/posts/update", [
       "errors" => $errors,
-      "post" => $post
+      "post" => $post,
     ]);
   }
 
@@ -88,6 +89,8 @@ class PostController
      * @var Post $post
      */
     $post = Post::find($id);
+    // check the permission 
+    CheckPermission::canDeletePost($post);
     if (!$post) {
       echo "Post Not Founded";
       return;
