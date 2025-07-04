@@ -12,7 +12,7 @@ class PageController
 {
   static function index(Router $router)
   {
-    $posts = Post::getAll();
+    $posts = Post::where("status", "published");
     $categories = Category::getAll();
     $featuredPosts = array_slice($posts, 3, 3);
     $router->render("blog/home", [
@@ -30,20 +30,31 @@ class PageController
   {
     $router->render("/blog/about-us");
   }
-  
+
   static function dashboard(Router $router)
   {
-    ["posts" => $postsCount] = Post::count();
-    ["users" => $usersCount] = User::count();
-    ["comments" => $commentsCount] = Comment::count();
-    ["categories" => $categoriesCount] = Category::count();
-    $lastsPosts = Post::getAll(["limit" => 3, "order" => "created_at desc"]);
-    $lastsComments = Comment::getAll(["limit" => 3, "order" => "created_at desc"]);
+    $data = [];
+    $isAdmin = $_SESSION["role"] === "admin";
+    $criteria = ["limit" => 3, "order" => "created_at desc"];
+    if (!$isAdmin) {
+      $criteria["where"] = "status = 'published'";
+    } else {
+      ["posts" => $postsCount] = Post::count();
+      ["users" => $usersCount] = User::count();
+      ["comments" => $commentsCount] = Comment::count();
+      ["categories" => $categoriesCount] = Category::count();
+      $data = [
+        "postCount" => $postsCount,
+        "usersCount" => $usersCount,
+        "commentsCount" => $commentsCount,
+        "categoriesCount" => $categoriesCount,
+      ];
+    }
+    $lastsPosts = Post::getAll($criteria);
+    $lastsComments = Comment::getAll($criteria);
     $router->render("/dashboard/home", [
-      "postCount" => $postsCount,
-      "usersCount" => $usersCount,
-      "commentsCount" => $commentsCount,
-      "categoriesCount" => $categoriesCount,
+      "isAdmin" => $isAdmin,
+      "data" => $data,
       "lastsPosts" => $lastsPosts,
       "lastsComments" => $lastsComments
     ]);
