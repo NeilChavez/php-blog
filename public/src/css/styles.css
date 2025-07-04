@@ -1,16 +1,13 @@
-/* CSS Variables for Light and Dark Mode */
+/* CSS Variables*/
 :root {
-  /* Light Mode Colors */
-  /* --bg-primary: #f5f5f5;
-  --bg-secondary: #ffffff; */
   --bg-primary: #ffffff;
   --bg-secondary: #f1f1f1;
   --text-primary: #333;
   --text-secondary: #666;
   --border-color: #eee;
   --shadow-color: rgba(0, 0, 0, 0.1);
-  --accent-color: #667eea;
-  --accent-hover-color: #5a6fd8;
+  --accent-color: #17181e;
+  --accent-hover-color: #4d5061;
   --sidebar-bg-start: #667eea;
   --sidebar-bg-end: #764ba2;
   --btn-primary-bg: #667eea;
@@ -41,44 +38,6 @@
   --status-inactive-text: #721c24;
 }
 
-/* Dark Mode Colors */
-body.dark-mode {
-  --bg-primary: #1a1a2e;
-  --bg-secondary: #16213e;
-  --text-primary: #e0e0e0;
-  --text-secondary: #b0b0b0;
-  --border-color: #333;
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --accent-color: #4a90e2;
-  --accent-hover-color: #3a7bd5;
-  --sidebar-bg-start: #0f3460;
-  --sidebar-bg-end: #1a1a2e;
-  --btn-primary-bg: #0f3460;
-  --btn-primary-hover-bg: #16213e;
-  --btn-secondary-bg: #4a4a4a;
-  --btn-danger-bg: #9a031e;
-  --btn-success-bg: #0a6b30;
-  --table-header-bg: #2a2a4a;
-  --table-row-hover-bg: #22223a;
-  --form-border: #444;
-  --form-focus-shadow: rgba(15, 52, 96, 0.4);
-  --stat-number-color: #4a90e2;
-  --activity-post-bg: #4a90e2;
-  --activity-comment-bg: #0a6b30;
-  --activity-user-bg: #e6b800;
-  --status-published-bg: #0f4d23;
-  --status-published-text: #a8e6cf;
-  --status-draft-bg: #5c4a00;
-  --status-draft-text: #ffe066;
-  --status-active-bg: #0a4a5a;
-  --status-active-text: #80d0e0;
-  --status-approved-bg: #0f4d23;
-  --status-approved-text: #a8e6cf;
-  --status-pending-bg: #5c4a00;
-  --status-pending-text: #ffe066;
-  --status-inactive-bg: #6b0000;
-  --status-inactive-text: #ff8080;
-}
 
 /* General Styles (Mobile First) */
 * {
@@ -103,7 +62,6 @@ a {
 }
 
 a:hover {
-  color: var(--accent-hover-color);
   text-decoration: underline;
 }
 
@@ -213,15 +171,19 @@ a:hover {
   transition: all 0.3s ease;
   text-decoration: none;
   display: inline-block;
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
 .btn-primary {
-  background: var(--btn-primary-bg);
-  color: white;
+  background: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+  border: white solid 2px;
 }
 
 .btn-primary:hover {
-  background: var(--btn-primary-hover-bg);
+  background: white;
+  color: black
 }
 
 .btn-secondary {
@@ -247,20 +209,6 @@ a:hover {
 .btn-small {
   padding: 5px 10px;
   font-size: 12px;
-}
-
-/* Dark Mode Toggle Button */
-.dark-mode-toggle {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: var(--text-primary);
-  transition: color 0.3s ease;
-}
-
-.dark-mode-toggle:hover {
-  opacity: 0.8;
 }
 
 /* Main Layout for Blog Home/Post */
@@ -492,6 +440,10 @@ a:hover {
 .categories-list a:hover {
   background: var(--border-color);
   text-decoration: none;
+}
+.categories-list a{
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
 /* Forms (Login/Signup) */
