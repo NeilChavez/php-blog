@@ -30,7 +30,7 @@ class Post extends ActiveRecord
     $this->content = isset($args["content"]) ? trim($args["content"]) : "";
     $this->status = $args["status"] ?? "";
     $this->created_at = self::now() ?? "";
-    $this->updated_at = $args["updated_at"] ?? "";
+    $this->updated_at = self::now() ?? "";
     $this->user_id = $args["user_id"] ?? "";
   }
 
@@ -86,9 +86,13 @@ class Post extends ActiveRecord
     $this->slug = $this->generateSlug($this->title);
     @session_start();
     $this->user_id = $_SESSION["id"];
+    $isEditing = $this->id;
+    if ($isEditing) {
+      $this->updated_at = self::now();
+    }
     $res = $this->save();
     if ($res) {
-      $state = $this->id ? "updated" : "created";
+      $state = $isEditing ? "updated" : "created";
       header("Location: /dashboard/posts?message=" . $state . "-with-success");
       exit;
     }

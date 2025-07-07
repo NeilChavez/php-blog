@@ -31,7 +31,7 @@ class User extends ActiveRecord
     $this->password = $args["password"] ?? "";
     $this->role = $args["role"] ?? "subscriber"; // by default subscriber
     $this->created_at = self::now() ?? "";
-    $this->updated_at = $args["updated_at"] ?? "";
+    $this->updated_at = self::now() ?? "";
   }
 
   function validate(): array

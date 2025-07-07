@@ -24,7 +24,7 @@ class Comment extends ActiveRecord
     $this->content = $args["content"] ?? "";
     $this->status = "draft" ?? ""; //draft by deafult
     $this->created_at = self::now() ?? "";
-    $this->updated_at = $args["updated_at"] ?? "";
+    $this->updated_at = self::now() ?? "";
     $this->post_id = $args["post_id"] ?? "";
     $this->user_id = $args["user_id"] ?? "";
     $this->username = $args["username"] ?? "";
