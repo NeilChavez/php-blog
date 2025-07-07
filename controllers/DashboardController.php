@@ -10,13 +10,41 @@ use model\Category;
 
 class DashboardController
 {
+  static function index(Router $router)
+  {
+    $data = [];
+    $isAdmin = $_SESSION["role"] === "admin";
+    $criteria = ["limit" => 3, "order" => "created_at desc"];
+    if (!$isAdmin) {
+      $criteria["where"] = "status = 'published'";
+    } else {
+      ["posts" => $postsCount] = Post::count();
+      ["users" => $usersCount] = User::count();
+      ["comments" => $commentsCount] = Comment::count();
+      ["categories" => $categoriesCount] = Category::count();
+      $data = [
+        "postCount" => $postsCount,
+        "usersCount" => $usersCount,
+        "commentsCount" => $commentsCount,
+        "categoriesCount" => $categoriesCount,
+      ];
+    }
+    $lastsPosts = Post::getAll($criteria);
+    $lastsComments = Comment::getAll($criteria);
+    $router->render("/dashboard/home", [
+      "isAdmin" => $isAdmin,
+      "data" => $data,
+      "lastsPosts" => $lastsPosts,
+      "lastsComments" => $lastsComments
+    ]);
+  }
   static function posts(Router $router)
   {
     $isAdmin = $_SESSION["role"] === "admin";
     $userId = $_SESSION["id"];
     $posts = [];
     if ($isAdmin) {
-      $posts = Post::getAll();
+      $posts = Post::getAll(["order" => "updated_at desc"]);
     } else {
       $posts = Post::where("user_id", $userId);
     }
@@ -43,7 +71,7 @@ class DashboardController
     $userId = $_SESSION["id"];
     $comments = [];
     if ($isAdmin) {
-      $comments = Comment::getAll();
+      $comments = Comment::getAll(["order" => "created_at desc"]);
     } else {
       $comments = Comment::where("user_id", $userId);
     }
@@ -54,7 +82,7 @@ class DashboardController
 
   static function users(Router $router)
   {
-    $users = User::getAll();
+    $users = User::getAll(["order" => "updated_at desc"]);
     $router->render("dashboard/users/all-users", [
       "users" => $users
     ]);

@@ -25,7 +25,7 @@ $router->get("/categories", [PageController::class, "byCategories"]);
 /*********************************************************
  * Dashboard private routes with relatives CRUDS actions *
  *********************************************************/
-$router->get("/dashboard", [PageController::class, "dashboard"]);
+$router->get("/dashboard", [DashboardController::class, "index"]);
 $router->get("/dashboard/posts", [DashboardController::class, "posts"]);
 $router->get("/dashboard/categories", [DashboardController::class, "categories"]);
 $router->get("/dashboard/comments", [DashboardController::class, "comments"]);
