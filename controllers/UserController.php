@@ -68,6 +68,7 @@ class UserController
       $user->setAvatar($imageName);
       $errors = array_merge($errors, $user->validate());
       if (empty($errors)) {
+        $user->setUpdateTime();
         $res = $user->save();
         if (!$res) {
           header("Location: /blog/error");

@@ -33,7 +33,7 @@ class PostController
   }
   static function createPost(Router $router)
   {
-    CheckPermission::canCreatePost();
+    CheckPermission::canDoAction("create", "post");
     $post = new Post();
     $categories = Category::getAll();
     $errors = [];
@@ -64,7 +64,7 @@ class PostController
      */
     $post = Post::find($id);
     $errors = [];
-    CheckPermission::canEditPost($post, "edit");
+    CheckPermission::canDoAction("edit", "post", $post);
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
       $post->sincronize($_POST);
       $fileName = $_FILES["file"]["name"];
@@ -72,6 +72,7 @@ class PostController
       $post->setImage($imageName);
       $errors = array_merge($post->validate(), $errors);
       if (empty($errors)) {
+        $post->setUpdateTime();
         $post->savePost();
       }
     }
@@ -90,7 +91,7 @@ class PostController
      */
     $post = Post::find($id);
     // check the permission 
-    CheckPermission::canDeletePost($post);
+    CheckPermission::canDoAction("delete", "post", $post);
     if (!$post) {
       echo "Post Not Founded";
       return;

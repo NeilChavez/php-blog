@@ -12,7 +12,7 @@ class CommentController
 {
   static function create(Router $router)
   {
-    CheckPermission::canCreateComment();
+    CheckPermission::canDoAction("create", "comment");
     $comment = new Comment();
     $errors = [];
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -24,7 +24,7 @@ class CommentController
         //check if the current user can do this action,
         //if not, he will be redirected by CheckPermission class
         //to a "Not Authorized" page
-        CheckPermission::canCreateComment();
+        CheckPermission::canDoAction("create", "comment");
         // save the comment
         $comment->save();
         header("Location: /post?id=" . $post_id . "&message=comment-correctly-inserted#success-badge");
@@ -53,12 +53,13 @@ class CommentController
     // check if the current user can do this action,
     // if not, he will be redirected by CheckPermission class
     // to a "Not Authorized" page
-    CheckPermission::canEditComment($targetComment);
+    CheckPermission::canDoAction("edit", "comment", $targetComment);
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
       $targetComment->sincronize($_POST);
       $targetComment->updated_at = $targetComment->now();
       $errors = $targetComment->validate();
       if (empty($errors)) {
+        $targetComment->setUpdateTime();
         $targetComment->save();
 
         header("Location: /post?id=" . $id . "&message=comment-updated-successfully#" . $targetComment->id);
@@ -85,7 +86,7 @@ class CommentController
         // check if the current user can do this action,
         // if not, he will be redirected by CheckPermission class
         // to a "Not Authorized" page
-        CheckPermission::canDeleteComment($comment);
+        CheckPermission::canDoAction("delete", "comment", $comment);
         $res = $comment->delete();
         if ($res && str_starts_with($_SERVER["REQUEST_URI"], "/dashboard")) {
           header("Location: /dashboard/comments?id=" . $postId . "&message=comment-deleted");
@@ -114,7 +115,7 @@ class CommentController
       // check if the current user can do this action,
       // if not, he will be redirected by CheckPermission class
       // to a "Not Authorized" page
-      CheckPermission::canChangeStatusComment($comment);
+      CheckPermission::canDoAction("change-status", "comment", $comment);
       $comment->status = "published";
       $res = $comment->save();
       if ($res) {
@@ -139,7 +140,7 @@ class CommentController
       // check if the current user can do this action,
       // if not, he will be redirected by CheckPermission class
       // to a "Not Authorized" page
-      CheckPermission::canEditComment($comment);
+      CheckPermission::canDoAction("change-status", "comment", $comment);
       $comment->status = "draft";
       $res = $comment->save();
       if ($res) {
@@ -153,7 +154,7 @@ class CommentController
   {
     $isAdmin = $_SESSION["role"] === "admin";
     $criteria = ["status" => "draft"];
-    $comments = [];
+    $comments = ["order" => "created_at"];
     if (!$isAdmin) {
       $criteria["user_id"] = $_SESSION["id"];
     }

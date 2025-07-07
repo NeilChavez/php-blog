@@ -8,62 +8,68 @@ class CheckPermission
 {
   const PERMISSIONS = [
     "post" => [
-      "create" => ["admin", "author"],
-      "edit" => ["admin", "author"], // and the owner
-      "delete" => ["admin", "author"] // and the owner
+      "create" => [
+        "roles"  => ["admin", "author"]
+      ],
+      "edit" => [
+        "roles" => ["admin", "author"],
+        "owner-is-required" => true
+      ],
+      "delete" => [
+        ["admin", "author"],
+        "owner-is-required" => true
+      ]
     ],
     "comment" => [
-      "edit" => ["admin", "author", "subscriber"],
-      "create" => ["admin", "author", "subscriber"],
-      "delete" => ["admin"], // and owner
-      "change-status" => ["admin"], // and owner
+      "create" => [
+        "roles" => ["admin", "author", "subscriber"]
+      ],
+      "edit" => [
+        "roles" => ["admin", "author", "subscriber"],
+        "owner-is-required" => true
+      ], // and the owner
+      "delete" => [
+        "roles" => ["admin"]
+      ], // and owner
+      "change-status" => [
+        "roles" => ["admin"],
+        "owner-is-required" => true
+      ] // and owner
     ]
   ];
-  public static function canEditPost($entity, $action)
-  {
-    $user = self::getCurrentIdAndRoleUser();
-    // retrieve the group that can edit the post
-    $allowedGruop = self::PERMISSIONS["post"][$action];
-    $isInAllowedGroup = in_array($user->role, $allowedGruop);
-    // check if the user is the owner of the post
-    $isOwner = $user->id === $entity->user_id;
-    // redirect if user role is not in ["admin", "author"]
-    // AND if user is not the owner of the post
-    if (!$isInAllowedGroup && !$isOwner) {
-      self::redirectToNotAuthorized();
-    }
-    return true;
-  }
 
-  public static function canCreatePost()
+  public static function canDoAction($action, $entityType, $entity = null)
   {
     $user = self::getCurrentIdAndRoleUser();
-    // retrieve the group that can edit the post
-    $allowedGroup = self::PERMISSIONS["post"]["create"];
+    $rules = self::PERMISSIONS[$entityType][$action];
+    // retrieve the group that can edit the entity
+    $allowedGroup = $rules["roles"];
+    // check if the role is in the allowed role group
     $isInAllowedGroup = in_array($user->role, $allowedGroup);
-    // redirect if user role is not in ["admin", "author", "subscriber"]
+    // check if user is admin
+    $isAdmin = $user->role === "admin";
+    // check if the user is the owner of the entity
+    $isOwner = $user->id === $entity?->user_id;
+
+    $ownershipRequired = $rules["owner-is-required"] ?? null;
+
+    // give the permission always if user is Admin
+    if ($isAdmin) {
+      return true;
+    }
+    // check if the ownership is required for this action
+    if ($ownershipRequired) {
+      // redirect if the user is NOT the owner 
+      if (!$isOwner) {
+        self::redirectToNotAuthorized();
+      }
+      return true;
+    }
+    // redirect if the user is NOT in the allowed group
     if (!$isInAllowedGroup) {
       self::redirectToNotAuthorized();
     }
-    return true;
   }
-
-  public static function canDeletePost($entity)
-  {
-    $user = self::getCurrentIdAndRoleUser();
-    // retrieve the group that can edit the post
-    $allowedGruop = self::PERMISSIONS["post"]["delete"];
-    $isInAllowedGroup = in_array($user->role, $allowedGruop);
-    // check if the user is the owner of the post
-    $isOwner = $user->id === $entity->user_id;
-    // redirect if user role is not in ["admin", "author"]
-    // AND if user is not the owner of the post
-    if (!$isInAllowedGroup && !$isOwner) {
-      self::redirectToNotAuthorized();
-    }
-    return true;
-  }
-
   public static function redirectToNotAuthorized()
   {
     header("Location: /blog/not-authorized");
@@ -91,67 +97,5 @@ class CheckPermission
       exit;
     }
     return [$id, $role];
-  }
-
-  static function canEditComment($entity)
-  {
-    $user = self::getCurrentIdAndRoleUser();
-    // retrieve the group that can edit the comments
-    $allowedGroup = self::PERMISSIONS["comment"]["edit"];
-    // check if the user is the owner of the post
-    $isInAllowedGroup = in_array($user->role, $allowedGroup);
-    // check if the current user is the owner
-    $isOwner = $user->id === $entity->user_id;
-    // redirect if user role is not in ["admin"]
-    // AND if user is not the owner of the comment
-    if (!$isInAllowedGroup && !$isOwner) {
-      self::redirectToNotAuthorized();
-    }
-    return true;
-  }
-
-  public static function canDeleteComment($entity)
-  {
-    $user = self::getCurrentIdAndRoleUser();
-    // retrieve the group that can edit the comments
-    $allowedGroup = self::PERMISSIONS["comment"]["delete"];
-    $isInAllowedGroup = in_array($user->role, $allowedGroup);
-    // check if the user is the owner of the comment
-    $isOwner = $entity->user_id === $user->id;
-    // redirect if user role is not in ["admin"]
-    // AND if user is not the owner of the comment
-    if (!$isInAllowedGroup && !$isOwner) {
-      self::redirectToNotAuthorized();
-    }
-    return true;
-  }
-
-  public static function canCreateComment()
-  {
-    $user = self::getCurrentIdAndRoleUser();
-    // retrieve the group that can edit the comments
-    $allowedGroup = self::PERMISSIONS["comment"]["create"];
-    $isInAllowedGroup = in_array($user->role, $allowedGroup);
-    // redirect if user role is not in ["admin", "author", "subscriber"]
-    if (!$isInAllowedGroup) {
-      self::redirectToNotAuthorized();
-    }
-    return true;
-  }
-
-  public static function canChangeStatusComment($entity)
-  {
-    $user = self::getCurrentIdAndRoleUser();
-    // retrieve the group that can edit the comments
-    $allowedGroup = self::PERMISSIONS["comment"]["change-status"];
-    $isInAllowedGroup = in_array($user->role, $allowedGroup);
-    // check if the user is the owner of the comment
-    $isOwner = $user->id === $entity->user_id;
-    // redirect if user role is not in ["admin", "author", "subscriber"]
-    // AND if user is not the owner of the comment
-    if (!$isInAllowedGroup && !$isOwner) {
-      self::redirectToNotAuthorized();
-    }
-    return true;
   }
 }

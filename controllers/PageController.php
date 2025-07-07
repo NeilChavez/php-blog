@@ -31,35 +31,6 @@ class PageController
     $router->render("/blog/about-us");
   }
 
-  static function dashboard(Router $router)
-  {
-    $data = [];
-    $isAdmin = $_SESSION["role"] === "admin";
-    $criteria = ["limit" => 3, "order" => "created_at desc"];
-    if (!$isAdmin) {
-      $criteria["where"] = "status = 'published'";
-    } else {
-      ["posts" => $postsCount] = Post::count();
-      ["users" => $usersCount] = User::count();
-      ["comments" => $commentsCount] = Comment::count();
-      ["categories" => $categoriesCount] = Category::count();
-      $data = [
-        "postCount" => $postsCount,
-        "usersCount" => $usersCount,
-        "commentsCount" => $commentsCount,
-        "categoriesCount" => $categoriesCount,
-      ];
-    }
-    $lastsPosts = Post::getAll($criteria);
-    $lastsComments = Comment::getAll($criteria);
-    $router->render("/dashboard/home", [
-      "isAdmin" => $isAdmin,
-      "data" => $data,
-      "lastsPosts" => $lastsPosts,
-      "lastsComments" => $lastsComments
-    ]);
-  }
-
   public static function byCategories(Router $router)
   {
     $id = $_GET["id"] ?? "";
