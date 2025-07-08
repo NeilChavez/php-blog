@@ -1,13 +1,14 @@
-    <div class="post-card">
-      <div class="post-image-container">
-        <img src="https://picsum.photos/id/237/200/300" alt="image" class="post-card-image">
+
+      <div class="post-card">
+        <div class="post-image-container">
+          <img src="/src/images/<?php echo $post->featured_image?>" alt="featured image" class="post-card-image">
+        </div>
+        <div class="">
+          <h2><a href="/post?id=<?php echo $post->id?>"><?php echo $post->title ?></a></h2>
+          <p class="post-meta">
+            <a href="">User</a> In <a href="#">category</a> <?php echo $post->updated_at ?? $post->created_at ?>
+          </p>
+          <p class="post-excerpt"></p>
+          <a href="/post?id=<?php echo $post->id ?>" class="btn btn-secondary btn-small">Read More</a>
+        </div>
       </div>
-      <div class="">
-        <h2><a href="/post?id=1">Title</a></h2>
-        <p class="post-meta">
-          Di <a href="#">Author</a> In <a href="#">category</a> il 33/12/24
-        </p>
-        <p class="post-excerpt">estratto</p>
-        <a href="blog-post.html?id=${post.id}" class="btn btn-primary btn-small">Leggi di più</a>
-      </div>
-    </div>
