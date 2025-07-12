@@ -3,6 +3,7 @@
 namespace model\ActiveRecord;
 
 use ErrorException;
+use Exception;
 
 class ActiveRecord
 {
@@ -17,7 +18,7 @@ class ActiveRecord
     self::$db = $connection;
   }
   //create
-  function create(): bool|ActiveRecord
+  function create(): array|Exception|Number
   {
     $keys = implode(", ", array_keys($this->getKeysAndValues()));
     $values = implode("', '", array_values($this->getKeysAndValues()));
@@ -26,20 +27,21 @@ class ActiveRecord
     VALUES
     ('" . $values . "');";
     $res = self::$db->query($query);
+    $lastId = self::$db->query("SELECT LAST_INSERT_ID()");
     if (!$res) {
       throw new ErrorException("Query not successfull");
     }
-    return $res;
+    return $lastId->fetch_assoc();
   }
 
   //read
   static function getAll($options = []): array
   {
     $query = "SELECT * FROM " . static::$table;
-    if(count($options) > 0)
-    {
-      $query .= $options["order"] ? " ORDER BY " . $options["order"] : "";
-      $query .= $options["limit"] ? " LIMIT " . $options["limit"] :  "";
+    if (count($options) > 0) {
+      $query .= isset($options["where"]) ? " WHERE " . $options["where"] : "";
+      $query .= isset($options["order"]) ? " ORDER BY " . $options["order"] : "";
+      $query .= isset($options["limit"]) ? " LIMIT " . $options["limit"] :  "";
     }
     $query .= ";";
     $res = self::$db->query($query)->fetch_all(MYSQLI_ASSOC);
@@ -99,7 +101,7 @@ class ActiveRecord
     return $res;
   }
 
-  function save(): ActiveRecord|bool
+  function save(): bool|array|Exception
   {
     if (!$this->id) {
       return $this->create();
@@ -108,7 +110,7 @@ class ActiveRecord
     }
   }
 
-  static function findBy($args = []): ActiveRecord|bool
+  static function findBy($args = []): array|bool
   {
     $criteria = "";
     foreach ($args as $key => $value) {
@@ -124,12 +126,17 @@ class ActiveRecord
     if (!$res) {
       throw new ErrorException("Query not successf0ull");
     }
-    $res = $res->fetch_assoc();
+    $res = $res->fetch_all(MYSQLI_ASSOC);
     if (!$res) {
       return false;
     }
-    $entity = self::createObject($res);
-    return $entity;
+    $entities = [];
+    foreach ($res as $results) {
+
+      $entities[] = self::createObject($results);
+    }
+
+    return $entities;
   }
 
   static function where($key, $value)
@@ -206,5 +213,10 @@ class ActiveRecord
       return null;
     }
     return self::$db->real_escape_string($value);
+  }
+
+  public function setUpdateTime()
+  {
+    $this->updated_at = self::now();
   }
 }
