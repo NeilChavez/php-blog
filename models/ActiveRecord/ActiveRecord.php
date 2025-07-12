@@ -2,6 +2,7 @@
 
 namespace model\ActiveRecord;
 
+
 use ErrorException;
 use Exception;
 
@@ -18,7 +19,7 @@ class ActiveRecord
     self::$db = $connection;
   }
   //create
-  function create(): array|Exception|Number
+  function create(): array|Exception
   {
     $keys = implode(", ", array_keys($this->getKeysAndValues()));
     $values = implode("', '", array_values($this->getKeysAndValues()));
