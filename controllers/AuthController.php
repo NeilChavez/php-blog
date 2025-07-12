@@ -20,7 +20,7 @@ class AuthController
         /**
          * @var User|bool $user
          */
-        $user = User::findBy(["email" => $user->email]);
+        list($user) = User::findBy(["email" => $user->email]);
         $passwordMatches = password_verify($passwordEntered, $user->password);
         if (!$user || !$passwordMatches) {
           $errors[] = "Some of your info isn't correct. Please try again.";
@@ -28,7 +28,9 @@ class AuthController
           header("Location: /blog/check-your-email");
           exit;
         } elseif ($passwordMatches) {
-          session_start();
+          if(!isset($_SESSION)){
+            session_start();
+          }
           $_SESSION["id"] = $user->id;
           $_SESSION["user"] = $user->username;
           $_SESSION["email"] = $user->email;
