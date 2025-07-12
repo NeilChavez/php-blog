@@ -12,11 +12,11 @@ class Post extends ActiveRecord
   public $featured_image;
   public $content;
   public $status;
-  // public $category; TODO
   public $created_at;
   public $updated_at;
   public $user_id;
   public $comments = [];
+  public $categories;
 
   static $table = "posts";
   static $columns = ["id", "title", "slug", "featured_image", "content", "status", "created_at", "updated_at", "user_id"];
@@ -32,6 +32,16 @@ class Post extends ActiveRecord
     $this->created_at = self::now() ?? "";
     $this->updated_at = self::now() ?? "";
     $this->user_id = $args["user_id"] ?? "";
+    $this->categories = $args["categories"] ?? null;
+
+  }
+
+  function categoriesFiltered(){
+    $arr = $this->categories;
+    $filtered = array_filter($arr, function ($value) {
+      return !empty($value);
+    });
+    $this->categories = $filtered;
   }
 
   function generateSlug($title): string
@@ -78,6 +88,10 @@ class Post extends ActiveRecord
     if (!$this->featured_image) {
       self::$errors[] = "You need to upload an image";
     }
+    $this->categoriesFiltered();
+    if (empty($this->categories)) {
+      self::$errors[] = "You need to choose at least one category";
+    }
     return self::$errors;
   }
 
@@ -87,16 +101,45 @@ class Post extends ActiveRecord
     @session_start();
     $this->user_id = $_SESSION["id"];
     $isEditing = $this->id;
+    $idPost = "";
     if ($isEditing) {
-      $this->updated_at = self::now();
+      $idPost = (int) $this->id;
+      $this->save();
+    } else {
+      $lastIdInserted = $this->save();
+      $idPost = (int) $lastIdInserted["LAST_INSERT_ID()"];
     }
-    $res = $this->save();
-    if ($res) {
+    $res = $this->saveCategories($idPost);
+    if (!empty($res)) {
       $state = $isEditing ? "updated" : "created";
       header("Location: /dashboard/posts?message=" . $state . "-with-success");
       exit;
     }
   }
+
+  public function saveCategories(int $post_id)
+  {
+    self::deleteCategories($post_id);
+    $values = "(" . $post_id . ", ";
+    $separator = "), (" . self::sanitizeValue($post_id) . ", ";
+    $values .= implode($separator, $this->categories);
+    $values .= ")";
+   
+    $res = "";
+
+    $query = "INSERT INTO categories_has_posts (post_id, category_id) VALUES " . $values . ";";
+    $res = self::$db->query($query);
+    return $res;
+  }
+
+  static function deleteCategories(int $post_id)
+  {
+    $query = "DELETE FROM categories_has_posts WHERE post_id = " . self::sanitizeValue($post_id) . ";";
+
+    $res = self::$db->query($query);
+    return $res;
+  }
+
   function setImage($imageName)
   {
     $this->featured_image = $imageName;
@@ -119,7 +162,7 @@ class Post extends ActiveRecord
       exit;
     }
   }
-  static function withComments($id)
+  static function withComments(int $id): Post
   {
     $query = " SELECT 
      p.id, u.username as postAuthor, p.title, p.slug, p.featured_image, p.content, p.status, p.created_at, p.updated_at, c.id as commentId, c.content as comment, us.username as commentAuthor, us.id as commentUserId
@@ -166,6 +209,28 @@ class Post extends ActiveRecord
     $post->comments = $comments;
     return $post;
   }
+
+  static function withCategories(int $id): Post
+  {
+    /**
+     * @var Post $post
+     */
+    $post = Post::find($id);
+    $post->categories = self::fetchCategoriesPost($id);
+    return $post;
+  }
+
+  static function fetchCategoriesPost(int $id): array
+  {
+    $categories = [];
+    $query = "SELECT category_id FROM categories_has_posts WHERE post_id = " . self::sanitizeValue($id) . ";";
+    $res = self::$db->query($query);
+    while ($row = $res->fetch_assoc()) {
+      $categories[] = $row["category_id"];
+    }
+    return $categories;
+  }
+
   static function findByCategory($category)
   {
     $query = "SELECT * FROM categories_has_posts WHERE category_id = " . self::sanitizeValue($category) . ";";

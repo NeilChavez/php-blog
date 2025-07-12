@@ -62,7 +62,8 @@ class PostController
     /**
      * @var Post $post
      */
-    $post = Post::find($id);
+    $post = Post::withCategories($id);
+    $categories = Category::getAll();
     $errors = [];
     CheckPermission::canDoAction("edit", "post", $post);
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -79,6 +80,7 @@ class PostController
     $router->render("/dashboard/posts/update", [
       "errors" => $errors,
       "post" => $post,
+      "categories" => $categories
     ]);
   }
 
