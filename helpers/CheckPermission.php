@@ -16,7 +16,7 @@ class CheckPermission
         "owner-is-required" => true
       ],
       "delete" => [
-        ["admin", "author"],
+        "roles" => ["admin", "author"],
         "owner-is-required" => true
       ]
     ],
