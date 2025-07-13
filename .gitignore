@@ -471,3 +471,14 @@ composer.lock
 *.css.map
 *.sass.map
 *.scss.map
+
+##### Environment
+# Local environment files
+.env
+.env.*
+!.env.example  # Keep the example file
+.env.local
+.env.development
+.env.test
+.env.production
+.secrets
