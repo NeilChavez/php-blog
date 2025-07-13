@@ -61,17 +61,6 @@
           <?php endif  ?>>Published</option>
       </select>
     </div>
-    <!-- TODO categories from DB -->
-    <!-- <div class="form-group">
-      <label>Category</label>
-      <select class="form-control" name="category" required>
-        <option value="">Select a category</option>
-        <?php foreach ($categories as $category): ?>
-          <option value="<?php echo $category->id ?>" <?php $category->name === $post->category ? "selected" : "" ?>><?php echo $category->name ?>
-          </option>
-        <?php endforeach; ?>
-      </select>
-    </div> -->
     <div class="form-group">
       <button type="submit" class="btn btn-primary">Save</button>
     </div>

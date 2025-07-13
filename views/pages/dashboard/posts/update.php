@@ -5,7 +5,7 @@
       <!-- Header -->
       <header class="header">
         <div>
-          <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+          <button class="menu-toggle">☰</button>
           <h1 id="pageTitle">Update post</h1>
         </div>
       </header>

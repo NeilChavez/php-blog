@@ -12,7 +12,7 @@
   <div id="commentsList">
     <?php foreach ($post->comments as $comment): ?>
       <div class="comment-item" id="<?php echo $comment->id ?>">
-        <?php if ($comment->user_id === $_SESSION["id"]): ?>
+        <?php if (isset($_SESSION["id"]) &&  $comment->user_id === $_SESSION["id"]): ?>
           <div class="d-flex gap">
             <a href="/comment/update?comment_id=<?php echo $comment->id ?>&post_id=<?php echo $post->id ?>#form-comment" class="btn btn-small btn-warning">Edit</a>
             <form action="/comment/delete" method="POST">

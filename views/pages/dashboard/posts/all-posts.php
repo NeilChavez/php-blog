@@ -5,7 +5,7 @@
       <!-- Header -->
       <header class="header">
         <div>
-          <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+          <button class="menu-toggle">☰</button>
           <h1 id="pageTitle">The posts</h1>
         </div>
       </header>
@@ -57,5 +57,10 @@
 
             </tbody>
           </table>
+          <?php if (count($posts) === 0): ?>
+            <div class="text-center padding-top">
+              <b class="center">You have no published posts.</b>
+            </div>
+          <?php endif ?>
         </div>
       </section>

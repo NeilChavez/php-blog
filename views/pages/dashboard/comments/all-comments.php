@@ -5,7 +5,7 @@
         <!-- Header -->
         <header class="header">
           <div>
-            <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+            <button class="menu-toggle">☰</button>
             <h1 id="pageTitle">Dashboard</h1>
           </div>
         </header>
@@ -35,22 +35,37 @@
                 <tbody id="commentsTableBody">
                   <?php foreach ($comments as $comment): ?>
                     <tr>
-                      <td><?php echo $comment->user_id ?></td>
-                      <td><?php echo $comment->post_id ?></td>
+                      <td>
+                        <a href="/blog/users?id=<?php echo $comment->user_id ?>">
+                          👤
+                        </a>
+                      </td>
+                      <td>
+                        <a href="/post?id=<?php echo $comment->post_id . "#" .  $comment->id ?>">
+                          📄
+                        </a>
+                      </td>
                       <td><?php echo $comment->content ?> </td>
-                      <td><span class="status-badge status-<?php echo $comment->status ?>">
+                      <td><span class="status-badge status-<?php echo $comment->status  ?>">
                           <?php echo $comment->status === 'published' ? 'Approved' : 'To approve' ?></span></td>
                       <td>
                         <?php echo $comment->updated_at ?? $comment->created_at ?>
                       </td>
                       <td>
-                        <form action="/dashboard/comment/approve" method="POST">
-                          <input type="hidden" value="<?php echo $comment->id ?>" name="comment_id">
-                          <button class="btn btn-small btn-success ">Approve</button>
-                        </form>
+                        <?php if ($comment->status === "published"): ?>
+                          <form action="/dashboard/comment/unapprove" method="POST">
+                            <input type="hidden" value="<?php echo $comment->id ?>" name="comment_id">
+                            <button class="btn btn-small btn-warning">Unapprove</button>
+                          </form>
+                        <?php else: ?>
+                          <form action="/dashboard/comment/approve" method="POST">
+                            <input type="hidden" value="<?php echo $comment->id ?>" name="comment_id">
+                            <button class="btn btn-small btn-success ">Approve</button>
+                          </form>
+                        <?php endif ?>
                         <form action="/dashboard/comment/delete" method="POST">
                           <input type="hidden" value="<?php echo $comment->id ?>" name="comment_id">
-                          <button class="btn btn-small btn-danger ">Approve</button>
+                          <button class="btn btn-small btn-danger ">Delete</button>
                         </form>
                       </td>
                     </tr>
@@ -61,8 +76,8 @@
             </table>
             <?php if (count($comments) === 0): ?>
               <div class="text-center padding-top">
-                <b class="center">There aren't comments to see</b>
-            </div>
+                <b class="center">No comments yet.</b>
+              </div>
             <?php endif ?>
           </div>
         </section>

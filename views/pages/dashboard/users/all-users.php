@@ -7,7 +7,7 @@
         <header class="header">
           <div>
             <!-- TODO change toggle onclick online -->
-            <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+            <button class="menu-toggle">☰</button>
             <h1 id="pageTitle">All users</h1>
           </div>
         </header>
@@ -16,6 +16,11 @@
           <div class="section-header">
             <h2>Manage users</h2>
             <a href="/dashboard/users/create" class="btn btn-primary">+ New user</a>
+            <?php if (isset($_GET) && isset($_GET["message"])): ?>
+              <span class="status-badge btn-success center">
+                <?php echo ucfirst(str_replace("-", " ", $_GET["message"])) . "!" ?>
+              </span>
+            <?php endif ?>
           </div>
           <div class="table-container">
             <table id="usersTable">
@@ -54,7 +59,7 @@
                     <td><?php echo $user->username ?></td>
                     <td><?php echo $user->email ?></td>
                     <td><?php echo $user->role ?></td>
-                    <td><?php echo $user->update_at ?? $user->created_at ?></td>
+                    <td><?php echo $user->updated_at ?? $user->created_at ?></td>
                     <td>
                       <a href="/dashboard/users/edit?id=<?php echo $user->id ?>" class="btn btn-small btn-primary">Edit</a>
                       <form action="/dashboard/users/delete" method="POST">

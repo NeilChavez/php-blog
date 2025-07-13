@@ -6,37 +6,37 @@
       <!-- Header -->
       <header class="header">
         <div>
-          <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+          <button class="menu-toggle">☰</button>
           <h1 id="pageTitle">Dashboard</h1>
         </div>
       </header>
       <!-- Dashboard Section -->
       <section id="dashboard" class="content-section active">
-        <?php if ($isAdmin):?>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-number" id="totalPosts">
-              <?php echo $data["postCount"] ?>
+        <?php if ($isAdmin): ?>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-number" id="totalPosts">
+                <?php echo $data["postCount"] ?>
+              </div>
+              <div class="stat-label">Total Posts</div>
             </div>
-            <div class="stat-label">Total Posts</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-number" id="totalCategories">
-              <?php echo $data["categoriesCount"] ?> </div>
-            <div class="stat-label">Categories</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-number" id="totalComments"> <?php echo $data["commentsCount"] ?></div>
-            <div class="stat-label">Comments</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-number" id="totalUsers">
-              <?php echo $data["usersCount"] ?>
+            <div class="stat-card">
+              <div class="stat-number" id="totalCategories">
+                <?php echo $data["categoriesCount"] ?> </div>
+              <div class="stat-label">Categories</div>
             </div>
-            <div class="stat-label">Users</div>
+            <div class="stat-card">
+              <div class="stat-number" id="totalComments"> <?php echo $data["commentsCount"] ?></div>
+              <div class="stat-label">Comments</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="totalUsers">
+                <?php echo $data["usersCount"] ?>
+              </div>
+              <div class="stat-label">Users</div>
+            </div>
           </div>
-        </div>
-        <?php endif ;?>
+        <?php endif; ?>
 
         <div class="recent-activity">
           <h3>Recent activity</h3>
