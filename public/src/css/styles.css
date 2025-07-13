@@ -52,7 +52,6 @@ body {
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
   line-height: 1.6;
-  /* Migliorata la leggibilità del testo */
 }
 
 a {
@@ -151,7 +150,6 @@ a:hover {
   font-weight: bold;
   color: var(--text-primary);
   margin-bottom: 10px;
-  /* Spazio sotto il logo su mobile */
 }
 
 .header-actions {
@@ -159,7 +157,6 @@ a:hover {
   gap: 10px;
   align-items: center;
   justify-content: center;
-  /* Centra i bottoni su mobile */
 }
 
 .btn {
@@ -488,7 +485,6 @@ a:hover {
   border: 1px solid var(--form-border);
   border-radius: 5px;
   font-size: 16px;
-  /* background-color: var(--bg-secondary); */
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
@@ -628,6 +624,7 @@ a:hover {
 
 .sidebar.active {
   transform: translateX(0);
+  top: 0;
   /* Show sidebar on mobile */
 }
 
@@ -917,58 +914,9 @@ table tbody tr:hover {
   color: var(--status-inactive-text);
 }
 
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  align-items: center;
-  justify-content: center;
-}
 
-.modal.active {
-  display: flex;
-}
 
-.modal-content {
-  background: var(--bg-secondary);
-  padding: 30px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
-  transition: background-color 0.3s ease;
-}
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.modal-header h3 {
-  margin: 0;
-  color: var(--text-primary);
-}
-
-.modal-close {
-  /* Renamed from .close to avoid conflict with general .close */
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: var(--text-secondary);
-}
-
-.modal-close:hover {
-  color: var(--text-primary);
-}
 
 /* Overlay for mobile sidebar */
 .dashboard-overlay {
