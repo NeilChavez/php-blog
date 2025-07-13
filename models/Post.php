@@ -158,10 +158,17 @@ class Post extends ActiveRecord
     $res = $this->delete();
     if ($res) {
       $this->removeImage();
+      $this->deleteCategoriesAssociation($this->id);
       header("Location: /dashboard/posts?message=deleted-with-success");
       exit;
     }
   }
+
+  function deleteCategoriesAssociation(int $id){
+    $query = "DELETE FROM categories_has_posts WHERE post_id = " . self::sanitizeValue($id);
+    self::consultSQL($query);
+  }
+
   static function withComments(int $id): Post
   {
     $query = " SELECT 
