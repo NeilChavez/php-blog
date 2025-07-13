@@ -5,7 +5,6 @@
       <!-- Header -->
       <header class="header">
         <div>
-          <!-- TODO pass to JS file this inline function -->
           <button class="menu-toggle">☰</button>
           <h1 id="pageTitle">Update post</h1>
         </div>

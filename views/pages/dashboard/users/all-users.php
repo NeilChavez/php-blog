@@ -6,7 +6,6 @@
         <!-- Header -->
         <header class="header">
           <div>
-            <!-- TODO change toggle onclick online -->
             <button class="menu-toggle">☰</button>
             <h1 id="pageTitle">All users</h1>
           </div>
