@@ -61,7 +61,7 @@ class FileUploader
 
   private static function generateRandomName()
   {
-    $randomName = uniqid(rand(), true) . ".jpeg";
+    $randomName = uniqid(rand(), true) . ".jpg";
     return $randomName;
   }
 }
