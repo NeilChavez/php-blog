@@ -116,7 +116,7 @@ class CommentController
       // if not, he will be redirected by CheckPermission class
       // to a "Not Authorized" page
       CheckPermission::canDoAction("change-status", "comment", $comment);
-      $comment->status = "published";
+      $comment->status = "approved";
       $res = $comment->save();
       if ($res) {
         header("Location: /dashboard/comments/to-approve");
