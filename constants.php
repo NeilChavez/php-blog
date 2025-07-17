@@ -12,7 +12,7 @@ define("USER_SMPT", $_ENV["USER_SMPT"]);
 define("PASS_SMTP", $_ENV["PASS_SMTP"]);
 
 // title site
-define("TITLE_SITE", "The scientist");
+define("TITLE_SITE", "The Scientist");
 
 
 
