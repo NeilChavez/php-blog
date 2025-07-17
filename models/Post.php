@@ -166,7 +166,7 @@ class Post extends ActiveRecord
 
   function deleteCategoriesAssociation(int $id){
     $query = "DELETE FROM categories_has_posts WHERE post_id = " . self::sanitizeValue($id);
-    self::consultSQL($query);
+    self::$db->query($query);
   }
 
   static function withComments(int $id): Post
@@ -248,6 +248,9 @@ class Post extends ActiveRecord
       $ids[] = $result["post_id"];
     }
 
+    if(count($ids) === 0){
+      return [];
+    }
     $ids = implode(", ", $ids);
     $query = "SELECT * FROM posts WHERE id IN (" . $ids . ");";
     $posts = self::consultSQL($query);
