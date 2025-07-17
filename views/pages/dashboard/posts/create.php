@@ -6,7 +6,7 @@
       <header class="header">
         <div>
           <button class="menu-toggle">☰</button>
-          <h1 id="pageTitle">Update post</h1>
+          <h1 id="pageTitle">Create post</h1>
         </div>
       </header>
       <?php require "form.php"; ?>

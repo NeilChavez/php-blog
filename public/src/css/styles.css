@@ -94,6 +94,10 @@ a:hover {
   gap: 8px
 }
 
+.wrap{
+  flex-wrap: wrap;
+}
+
 /* Status badges */
 .status-badge {
   padding: 4px 8px;
@@ -261,11 +265,11 @@ a:hover {
 }
 
 .post-card-image {
-  width: 100%;
-  aspect-ratio: auto 1 / 1;
-  /* Fixed height for consistency on mobile */
-  object-fit: cover;
-  display: block;
+height: 100%;
+aspect-ratio: auto 1 / 1;
+object-fit: cover;
+display: block;
+width: 100%;
 }
 
 .post-card-content {
@@ -585,7 +589,7 @@ a:hover {
   display: grid;
   grid-template-columns: 1fr;
   /* Single column on mobile */
-  gap: 20px;
+  row-gap: 20px;
 }
 
 /* Specific styles for the main hero post on mobile */
@@ -998,6 +1002,10 @@ table tbody tr:hover {
     flex-grow: 1;
   }
 
+  .featured h2{
+    font-size: 18px;
+  }
+
   s .single-post-image {
     max-height: 400px;
     /* Larger image for desktop */
@@ -1025,7 +1033,7 @@ table tbody tr:hover {
 
   /* Grid for hero posts */
   .hero-posts-grid {
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1.3fr 1fr;
     /* Main post on left, two smaller on right */
     grid-template-rows: auto auto;
     /* Two rows for the right column */

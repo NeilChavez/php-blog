@@ -36,13 +36,14 @@
     </div>
     <div class="form-group">
       <label>Choose the categories:</label>
-      <div class="d-flex gap">
+      <div class="d-flex gap wrap">
         <?php foreach ($categories as $category): ?>
           <label for="<?php echo $category->id ?>">
             <?php echo $category->name ?>
             <input type="hidden" name="categories[]" value="0">
             <input type="checkbox" name="categories[]" id="<?php echo $category->id ?>" value="<?php echo $category->id ?>"
-              <?php echo in_array($category->id, $post->categories) ? "checked" : ""; ?>>
+              <?php 
+              echo in_array($category->id, $post->categories?? []) ? "checked" : ""; ?>>
           </label>
         <?php endforeach; ?>
       </div>

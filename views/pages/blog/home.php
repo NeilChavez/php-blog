@@ -3,7 +3,7 @@
   </div>
 
   <div class="container">
-    <h1>Ultimi Post</h1>
+    <h2>Last Posts</h2>
     <div class="blog-layout">
       <main class="blog-main-content">
         <?php require "../config/templates/postList.php"; ?>

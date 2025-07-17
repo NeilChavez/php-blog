@@ -47,12 +47,12 @@
                       </td>
                       <td><?php echo $comment->content ?> </td>
                       <td><span class="status-badge status-<?php echo $comment->status  ?>">
-                          <?php echo $comment->status === 'published' ? 'Approved' : 'To approve' ?></span></td>
+                          <?php echo $comment->status === 'pending' ? 'Approved' : 'To approve' ?></span></td>
                       <td>
                         <?php echo $comment->updated_at ?? $comment->created_at ?>
                       </td>
                       <td>
-                        <?php if ($comment->status === "published"): ?>
+                        <?php if ($comment->status === "approved"): ?>
                           <form action="/dashboard/comment/unapprove" method="POST">
                             <input type="hidden" value="<?php echo $comment->id ?>" name="comment_id">
                             <button class="btn btn-small btn-warning">Unapprove</button>
