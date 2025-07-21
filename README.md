@@ -1,12 +1,12 @@
 # Science Blog
-![Science blog gif](the-scientist.gif){ .image25percent }
+![Science blog gif](the-scientist.gif)
 
 This project has been developed with PHP and MySQL. It's a blog where there are admin, authors and subscribers role. Everyone can do certain actions depending on the role. I used the ***OOP (object-oriented programming)*** and ***the MVC (Movel View Controller) architetural pattern.***
 
 #### The database design: 
 The database design has the various relationships that exist between the tables in the database:
 
-![blog database design](blog-database-design.jpg){ .image25percent }
+![blog database design](blog-database-design.jpg)
 
 ## Features:
 - Science articles organized by categories
@@ -46,12 +46,16 @@ git clone https://github.com/NeilChavez/php-blog
 
 
 #### 2. Import Database Structure
-Import the provided database file (blog-php.sql) into your database management system (e.g., PhpMyAdmin) to create the database structure and load initial data:
+- Log in to PHPMyAdmin. 
+- Create a new database named 'blog-php' (if it doesn't exist).
+- Select the database.
+- Navigate to Import > Select File
+- Select dump.sql and set format to SQL
 
 ```
 php-blog
 |__ ...
-|__ php-php.sql
+|__ dump.sql
 |__ ...
 ```
 
